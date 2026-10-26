@@ -1,0 +1,11 @@
+{
+  "manifest_version": 3,
+  "name": "GitHub Inbox",
+  "version": "0.1.0",
+  "description": "Reviews und Aufgaben aus den sw-code-Boards mit einem Klick.",
+  "action": { "default_popup": "popup.html", "default_title": "Meine Arbeit" },
+  "options_page": "options.html",
+  "background": { "service_worker": "background.js", "type": "module" },
+  "permissions": ["storage", "alarms"],
+  "host_permissions": ["https://api.github.com/*"]
+}

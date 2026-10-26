@@ -1,0 +1,145 @@
+:root {
+  --bg: #ffffff;
+  --border: #d0d7de;
+  --text: #1f2328;
+  --text-muted: #656d76;
+  --accent: #0969da;
+  --ok: #1a7f37;
+  --ok-bg: #dafbe1;
+  --warn: #9a6700;
+  --warn-bg: #fff8c5;
+  --error: #d1242f;
+  --error-bg: #ffebe9;
+  color-scheme: light dark;
+}
+
+@media (prefers-color-scheme: dark) {
+  :root {
+    --bg: #0d1117;
+    --border: #30363d;
+    --text: #e6edf3;
+    --text-muted: #8d96a0;
+    --accent: #4493f8;
+    --ok: #3fb950;
+    --ok-bg: #12261e;
+    --warn: #d29922;
+    --warn-bg: #2e2a1a;
+    --error: #f85149;
+    --error-bg: #3c1618;
+  }
+}
+
+* {
+  box-sizing: border-box;
+}
+
+body {
+  margin: 0;
+  padding: 24px 16px;
+  font: 14px/1.5 system-ui, sans-serif;
+  background: var(--bg);
+  color: var(--text);
+}
+
+.options {
+  max-width: 560px;
+  margin: 0 auto;
+}
+
+.options h1 {
+  margin: 0 0 16px;
+  font-size: 18px;
+}
+
+.field {
+  display: block;
+  margin-bottom: 12px;
+}
+
+.field span {
+  display: block;
+  margin-bottom: 4px;
+  font-weight: 600;
+  font-size: 13px;
+}
+
+.field input {
+  width: 100%;
+  padding: 6px 8px;
+  border: 1px solid var(--border);
+  border-radius: 6px;
+  background: transparent;
+  color: var(--text);
+  font: inherit;
+}
+
+.hint {
+  margin: -8px 0 12px;
+  color: var(--text-muted);
+  font-size: 12px;
+}
+
+fieldset {
+  margin: 0 0 12px;
+  padding: 12px;
+  border: 1px solid var(--border);
+  border-radius: 6px;
+}
+
+legend {
+  padding: 0 4px;
+  color: var(--text-muted);
+  font-size: 12px;
+  font-weight: 600;
+  text-transform: uppercase;
+}
+
+.actions {
+  display: flex;
+  gap: 8px;
+}
+
+.actions button {
+  padding: 6px 14px;
+  border: 1px solid var(--border);
+  border-radius: 6px;
+  background: transparent;
+  color: var(--text);
+  font: inherit;
+  cursor: pointer;
+}
+
+.actions button[type="submit"] {
+  border-color: var(--accent);
+  background: var(--accent);
+  color: #ffffff;
+}
+
+.actions button:disabled {
+  opacity: 0.6;
+}
+
+.feedback {
+  margin-top: 16px;
+  padding: 8px 12px;
+  border-radius: 6px;
+}
+
+.feedback p {
+  margin: 0;
+}
+
+.feedback.ok {
+  color: var(--ok);
+  background: var(--ok-bg);
+}
+
+.feedback.warn {
+  color: var(--warn);
+  background: var(--warn-bg);
+}
+
+.feedback.error {
+  color: var(--error);
+  background: var(--error-bg);
+}

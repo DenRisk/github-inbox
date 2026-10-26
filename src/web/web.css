@@ -1,0 +1,30 @@
+html,
+body {
+  height: 100%;
+}
+
+body {
+  width: auto;
+}
+
+.list-column {
+  width: min(45%, 480px);
+}
+
+.detail-column {
+  flex: 1;
+  width: auto;
+}
+
+@media (max-width: 700px) {
+  .columns {
+    flex-direction: column;
+  }
+
+  .list-column {
+    width: auto;
+    max-height: 50%;
+    border-right: 0;
+    border-bottom: 1px solid var(--border);
+  }
+}

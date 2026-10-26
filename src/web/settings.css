@@ -1,0 +1,6 @@
+.back {
+  display: block;
+  max-width: 560px;
+  margin: 0 auto 16px;
+  color: var(--accent);
+}
