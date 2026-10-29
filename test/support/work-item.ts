@@ -13,6 +13,7 @@ export function item(overrides: Partial<WorkItem> = {}): WorkItem {
     number: 1,
     status: null,
     deadline: null,
+    pullRequests: [],
     ...overrides,
   };
 }

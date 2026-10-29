@@ -2,6 +2,7 @@ import { formatDate } from "../domain/dates";
 import type { WorkItem } from "../domain/work-item";
 import type { TodoStore } from "../todos/todo-store";
 import { Icon } from "../ui/Icon";
+import { PullRequestList } from "./PullRequestList";
 import { TodoList } from "./TodoList";
 import { DeadlineLabel, KindTile, StatusLabel } from "./WorkList";
 
@@ -44,6 +45,7 @@ export function WorkDetail({ item, today, todos, onTodosChange, onOpen }: WorkDe
         Auf GitHub öffnen
         <Icon name="external" small />
       </a>
+      {item.kind !== "review" && <PullRequestList item={item} onOpen={onOpen} />}
       <p class={description ? "description" : "description missing"}>{description || "Keine Beschreibung."}</p>
       <TodoList itemId={item.id} store={todos} onChange={onTodosChange} />
     </article>

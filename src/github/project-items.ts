@@ -1,5 +1,11 @@
 import type { WorkItem, WorkItemKind } from "../domain/work-item";
 import { GithubError, postGraphql, type GithubAccess, type GraphqlError } from "./graphql-client";
+import {
+  LINKED_PULL_REQUEST_FRAGMENT,
+  LINKED_PULL_REQUESTS_FIELDS,
+  toLinkedPullRequests,
+  type LinkedPullRequestsNode,
+} from "./linked-pull-requests";
 
 const PROJECT_ITEMS_QUERY = `
 query ProjectItems($org: String!, $number: Int!, $query: String!, $after: String) {
@@ -12,16 +18,17 @@ query ProjectItems($org: String!, $number: Int!, $query: String!, $after: String
           deadline: fieldValueByName(name: "Deadline-EOBD") { ... on ProjectV2ItemFieldDateValue { date } }
           content {
             __typename
-            ... on Issue { id title body url createdAt number repository { name } }
+            ... on Issue { id title body url createdAt number repository { name } ${LINKED_PULL_REQUESTS_FIELDS} }
             ... on PullRequest { id title body url createdAt number repository { name } }
           }
         }
       }
     }
   }
-}`;
+}
+${LINKED_PULL_REQUEST_FRAGMENT}`;
 
-interface ItemContent {
+interface ItemContent extends LinkedPullRequestsNode {
   __typename: string;
   id: string;
   title: string;
@@ -70,6 +77,7 @@ function toWorkItem(node: ItemNode & { content: ItemContent }, kind: WorkItemKin
     number: content.number,
     status: node.status?.name ?? null,
     deadline: node.deadline?.date ?? null,
+    pullRequests: toLinkedPullRequests(content),
   };
 }
 

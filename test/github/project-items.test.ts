@@ -13,6 +13,16 @@ const issueContent = {
   repository: { name: "sample-repo" },
 };
 
+const linkedPullRequest = {
+  __typename: "PullRequest",
+  title: "Sample pull request",
+  url: "https://github.com/acme/sample-repo/pull/9",
+  number: 9,
+  state: "MERGED",
+  isDraft: false,
+  repository: { name: "sample-repo" },
+};
+
 function page(nodes: unknown[], endCursor: string | null = null) {
   return {
     body: {
@@ -51,8 +61,26 @@ describe("fetchProjectItems", () => {
         number: 7,
         status: "In Review",
         deadline: "2026-10-24",
+        pullRequests: [],
       },
     ]);
+  });
+
+  it("lists the pull requests that mention an issue", async () => {
+    const content = { ...issueContent, timelineItems: { nodes: [{ source: linkedPullRequest }] } };
+    const fetchFn = fakeFetch(page([{ status: null, deadline: null, content }]));
+    const [mapped] = await fetchProjectItems({ ...params, fetchFn });
+    expect(mapped.pullRequests).toEqual([
+      {
+        title: "Sample pull request",
+        url: "https://github.com/acme/sample-repo/pull/9",
+        number: 9,
+        repository: "sample-repo",
+        state: "merged",
+        closesIssue: false,
+      },
+    ]);
+    expect(requestBody(fetchFn).query).toContain("closedByPullRequestsReferences");
   });
 
   it("maps a pull request item with the given kind", async () => {

@@ -69,6 +69,7 @@ function toReview(pullRequest: PullRequestNode, projectNumber: number): WorkItem
     number: pullRequest.number,
     status: boardItem?.status?.name ?? null,
     deadline: boardItem?.deadline?.date ?? null,
+    pullRequests: [],
   };
 }
 

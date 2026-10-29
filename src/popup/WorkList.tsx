@@ -2,6 +2,7 @@ import { formatDate, formatDeadline, isOverdue } from "../domain/dates";
 import type { WorkItem } from "../domain/work-item";
 import { todoProgress, type Todo } from "../todos/todo-store";
 import { Icon } from "../ui/Icon";
+import { PullRequestCount } from "./PullRequestList";
 
 interface WorkListProps {
   items: WorkItem[];
@@ -64,6 +65,7 @@ export function WorkList({ items, emptyText, selectedId, todosByItem, today, onS
                 {item.deadline && <DeadlineLabel deadline={item.deadline} today={today} />}
                 {item.closedAt && <span class="badge">geschlossen {formatDate(item.closedAt)}</span>}
                 <StatusLabel item={item} />
+                <PullRequestCount item={item} />
                 <TodoProgress todos={todosByItem[item.id] ?? []} />
               </span>
             </span>

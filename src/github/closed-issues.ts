@@ -1,5 +1,11 @@
 import type { WorkItem } from "../domain/work-item";
-import { postGraphql, type GithubAccess } from "./graphql-client";
+import { postGraphql, type GithubAccess, type GraphqlError } from "./graphql-client";
+import {
+  LINKED_PULL_REQUEST_FRAGMENT,
+  LINKED_PULL_REQUESTS_FIELDS,
+  toLinkedPullRequests,
+  type LinkedPullRequestsNode,
+} from "./linked-pull-requests";
 
 const CLOSED_ISSUES_QUERY = `
 query ClosedIssues($search: String!, $after: String) {
@@ -7,12 +13,13 @@ query ClosedIssues($search: String!, $after: String) {
     pageInfo { hasNextPage endCursor }
     nodes {
       __typename
-      ... on Issue { id title body url createdAt closedAt number repository { name } }
+      ... on Issue { id title body url createdAt closedAt number repository { name } ${LINKED_PULL_REQUESTS_FIELDS} }
     }
   }
-}`;
+}
+${LINKED_PULL_REQUEST_FRAGMENT}`;
 
-interface IssueNode {
+interface IssueNode extends LinkedPullRequestsNode {
   __typename: "Issue";
   id: string;
   title: string;
@@ -29,6 +36,11 @@ interface ClosedIssuesResponse {
     pageInfo: { hasNextPage: boolean; endCursor: string | null };
     nodes: ({ __typename: string } | null)[];
   };
+}
+
+function concernsSingleIssue(error: GraphqlError): boolean {
+  const path = error.path ?? [];
+  return path[0] === "search" && path[1] === "nodes" && typeof path[2] === "number" && path.length > 3;
 }
 
 function isIssue(node: { __typename: string } | null): node is IssueNode {
@@ -48,6 +60,7 @@ function toClosedItem(issue: IssueNode): WorkItem {
     number: issue.number,
     status: null,
     deadline: null,
+    pullRequests: toLinkedPullRequests(issue),
   };
 }
 
@@ -56,10 +69,12 @@ export async function fetchClosedIssues(params: GithubAccess & { closedSince: st
   const closed: WorkItem[] = [];
   let after: string | null = null;
   do {
-    const data: ClosedIssuesResponse = await postGraphql<ClosedIssuesResponse>(params, CLOSED_ISSUES_QUERY, {
-      search,
-      after,
-    });
+    const data: ClosedIssuesResponse = await postGraphql<ClosedIssuesResponse>(
+      params,
+      CLOSED_ISSUES_QUERY,
+      { search, after },
+      concernsSingleIssue,
+    );
     closed.push(...data.search.nodes.filter(isIssue).map(toClosedItem));
     after = data.search.pageInfo.hasNextPage ? data.search.pageInfo.endCursor : null;
   } while (after);

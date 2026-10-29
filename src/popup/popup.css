@@ -462,3 +462,74 @@ ul {
 .todo-input::placeholder {
   color: var(--ink-subtle);
 }
+
+.pull-requests {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-2);
+  width: 100%;
+  padding-top: var(--space-3);
+  border-top: 1px solid var(--line);
+}
+
+.pull-request-list {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-1);
+}
+
+.pull-request {
+  display: flex;
+  align-items: center;
+  gap: var(--space-2);
+  padding: 6px var(--space-3);
+  border-radius: var(--radius-sm);
+  background: var(--surface-raised);
+  color: var(--ink);
+  text-decoration: none;
+  transition: background 0.15s ease-out;
+}
+
+.pull-request:hover {
+  background: var(--line);
+}
+
+.pull-request-title {
+  flex: 1;
+  min-width: 0;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.pull-request-number {
+  color: var(--ink-muted);
+  font-variant-numeric: tabular-nums;
+}
+
+.pr-state {
+  flex: none;
+  min-width: 84px;
+  justify-content: center;
+}
+
+.pr-state.open {
+  border-color: var(--positive-soft);
+  background: var(--positive-soft);
+  color: var(--positive);
+}
+
+.pr-state.merged {
+  border-color: var(--violet-light);
+  color: var(--violet-light);
+}
+
+.pr-state.closed {
+  border-color: var(--negative);
+  color: var(--negative);
+}
+
+.pull-requests-empty {
+  margin: 0;
+  color: var(--ink-muted);
+}

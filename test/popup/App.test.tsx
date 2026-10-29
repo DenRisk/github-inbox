@@ -220,6 +220,39 @@ describe("App", () => {
     expect(ports.openUrl).toHaveBeenCalledWith("https://github.com/acme/sample-repo/pull/5");
   });
 
+  it("lists the pull requests of a selected task and opens one", async () => {
+    const pullRequests = [
+      { title: "Sample fix", url: "https://github.com/acme/sample-repo/pull/3", number: 3, repository: "sample-repo", state: "merged" as const, closesIssue: true },
+      { title: "Sample follow-up", url: "https://github.com/acme/other-repo/pull/4", number: 4, repository: "other-repo", state: "draft" as const, closesIssue: false },
+    ];
+    const { ports } = fakePorts({ ...snapshot, tasks: [{ ...task, pullRequests }] });
+    render(<App ports={ports} />);
+    fireEvent.click(await screen.findByRole("tab", { name: /Aufgaben/ }));
+    expect(screen.getByText("2 PRs")).toBeTruthy();
+    fireEvent.click(screen.getByText("Sample task"));
+    expect(screen.getByText("Gemergt")).toBeTruthy();
+    expect(screen.getByText("Entwurf")).toBeTruthy();
+    expect(screen.getByText("schließt")).toBeTruthy();
+    expect(screen.getByText("other-repo#4")).toBeTruthy();
+    fireEvent.click(screen.getByText("Sample fix"));
+    expect(ports.openUrl).toHaveBeenCalledWith("https://github.com/acme/sample-repo/pull/3");
+  });
+
+  it("says when no pull request belongs to a task", async () => {
+    const { ports } = fakePorts(snapshot);
+    render(<App ports={ports} />);
+    fireEvent.click(await screen.findByRole("tab", { name: /Aufgaben/ }));
+    fireEvent.click(screen.getByText("Sample task"));
+    expect(screen.getByText("Kein Pull Request verknüpft oder erwähnt.")).toBeTruthy();
+  });
+
+  it("shows no pull request section for a review", async () => {
+    const { ports } = fakePorts(snapshot);
+    render(<App ports={ports} />);
+    fireEvent.click(await screen.findByText("Sample review"));
+    expect(screen.queryByText("Pull Requests")).toBeNull();
+  });
+
   it("shows the todo progress of an item in the list", async () => {
     const { ports } = fakePorts(snapshot);
     await ports.todos.add("PR_1", "Check on phone");

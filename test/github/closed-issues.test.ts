@@ -14,6 +14,16 @@ const issue = {
   repository: { name: "sample-repo" },
 };
 
+const linkedPullRequest = {
+  __typename: "PullRequest",
+  title: "Sample pull request",
+  url: "https://github.com/acme/sample-repo/pull/9",
+  number: 9,
+  state: "MERGED",
+  isDraft: false,
+  repository: { name: "sample-repo" },
+};
+
 function page(nodes: unknown[], endCursor: string | null = null) {
   return { body: { data: { search: { pageInfo: { hasNextPage: endCursor !== null, endCursor }, nodes } } } };
 }
@@ -36,8 +46,40 @@ describe("fetchClosedIssues", () => {
         number: 7,
         status: null,
         deadline: null,
+        pullRequests: [],
       },
     ]);
+  });
+
+  it("lists the pull requests that close an issue", async () => {
+    const fetchFn = fakeFetch(page([{ ...issue, closedByPullRequestsReferences: { nodes: [linkedPullRequest] } }]));
+    const [closed] = await fetchClosedIssues({ ...params, fetchFn });
+    expect(closed.pullRequests).toEqual([
+      {
+        title: "Sample pull request",
+        url: "https://github.com/acme/sample-repo/pull/9",
+        number: 9,
+        repository: "sample-repo",
+        state: "merged",
+        closesIssue: true,
+      },
+    ]);
+  });
+
+  it("keeps the issue when GitHub hides a mentioning pull request", async () => {
+    const fetchFn = fakeFetch({
+      body: {
+        ...page([{ ...issue, timelineItems: { nodes: [{ source: null }] } }]).body,
+        errors: [
+          {
+            type: "FORBIDDEN",
+            message: "Resource protected by organization SAML enforcement.",
+            path: ["search", "nodes", 0, "timelineItems", "nodes", 0, "source"],
+          },
+        ],
+      },
+    });
+    expect((await fetchClosedIssues({ ...params, fetchFn })).map((i) => i.id)).toEqual(["I_1"]);
   });
 
   it("searches the issues assigned to the user and closed since the given day in the organization", async () => {

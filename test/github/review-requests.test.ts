@@ -51,6 +51,7 @@ describe("fetchReviewRequests", () => {
         number: 7,
         status: "Inbox",
         deadline: "2026-10-24",
+        pullRequests: [],
       },
     ]);
   });
