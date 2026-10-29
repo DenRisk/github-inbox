@@ -8,8 +8,8 @@
   --line: #2a2935;
   --line-strong: #3c3a4a;
   --ink: #f4f3fa;
-  --ink-muted: #9d9ab0;
-  --ink-subtle: #8a879e;
+  --ink-muted: #c4c1d4;
+  --ink-subtle: #a9a6bc;
   --ink-accent: #b8b1f0;
   --violet-deep: #5a43dc;
   --violet: #6e56f0;
@@ -50,7 +50,7 @@
 
 body {
   margin: 0;
-  font: 400 14px/20px var(--font-sans);
+  font: 500 14px/20px var(--font-sans);
   background: var(--canvas);
   color: var(--ink);
   -webkit-font-smoothing: antialiased;

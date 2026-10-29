@@ -45,8 +45,8 @@ ul {
 
 .updated {
   color: var(--ink-muted);
-  font-size: 12px;
-  line-height: 16px;
+  font-size: 13px;
+  line-height: 18px;
   font-weight: 500;
 }
 
@@ -96,7 +96,7 @@ ul {
 
 .stale {
   color: var(--ink-muted);
-  font-size: 12px;
+  font-size: 13px;
 }
 
 .columns {
@@ -164,7 +164,7 @@ ul {
   border-radius: var(--radius-pill);
   background: var(--surface-raised);
   color: var(--ink);
-  font-size: 12px;
+  font-size: 13px;
   line-height: 18px;
   font-weight: 600;
   font-variant-numeric: tabular-nums;
@@ -225,8 +225,8 @@ ul {
 
 .work-source {
   color: var(--ink-muted);
-  font-size: 12px;
-  line-height: 16px;
+  font-size: 13px;
+  line-height: 18px;
 }
 
 .meta {
@@ -252,8 +252,8 @@ ul {
   border: 1px solid var(--line-strong);
   border-radius: var(--radius-pill);
   color: var(--ink-muted);
-  font-size: 12px;
-  line-height: 16px;
+  font-size: 13px;
+  line-height: 18px;
   font-weight: 500;
   font-variant-numeric: tabular-nums;
 }
@@ -346,7 +346,7 @@ ul {
   margin: 0;
   padding-top: var(--space-3);
   border-top: 1px solid var(--line);
-  color: var(--ink-muted);
+  color: var(--ink);
   white-space: pre-wrap;
   overflow-wrap: anywhere;
 }
