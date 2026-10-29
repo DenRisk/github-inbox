@@ -129,7 +129,7 @@ describe("App", () => {
     expect(await screen.findByText(HINT)).toBeTruthy();
     fireEvent.click(screen.getByText("Sample review"));
     expect(screen.getByText("Review description")).toBeTruthy();
-    expect(screen.getByText("Auf GitHub öffnen ↗")).toBeTruthy();
+    expect(screen.getByText("Auf GitHub öffnen")).toBeTruthy();
     expect(screen.queryByText(HINT)).toBeNull();
   });
 
@@ -216,7 +216,7 @@ describe("App", () => {
     const { ports } = fakePorts(snapshot);
     render(<App ports={ports} />);
     fireEvent.click(await screen.findByText("Sample review"));
-    fireEvent.click(screen.getByText("Auf GitHub öffnen ↗"));
+    fireEvent.click(screen.getByText("Auf GitHub öffnen"));
     expect(ports.openUrl).toHaveBeenCalledWith("https://github.com/acme/sample-repo/pull/5");
   });
 
@@ -224,6 +224,6 @@ describe("App", () => {
     const { ports } = fakePorts(snapshot);
     await ports.todos.add("PR_1", "Check on phone");
     render(<App ports={ports} />);
-    expect(await screen.findByText("☐ 0/1")).toBeTruthy();
+    expect(await screen.findByText("0/1")).toBeTruthy();
   });
 });

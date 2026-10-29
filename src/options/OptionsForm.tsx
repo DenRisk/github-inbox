@@ -93,7 +93,10 @@ export function OptionsForm({ store, fetchFn }: { store: KeyValueStore; fetchFn:
 
   return (
     <form class="options" onSubmit={onSubmit}>
-      <h1>GitHub Inbox – Einstellungen</h1>
+      <p class="eyebrow">GitHub Inbox · Einstellungen</p>
+      <h1 class="headline">
+        Verbinde <b>deine Inbox</b> mit GitHub.
+      </h1>
       <TextField label="GitHub-Token" secret value={values.token} onInput={set("token")} />
       <p class="hint">Personal Access Token (classic) mit repo, read:org, read:project.</p>
       <TextField label="Organisation" value={values.organization} onInput={set("organization")} />
@@ -108,10 +111,10 @@ export function OptionsForm({ store, fetchFn }: { store: KeyValueStore; fetchFn:
         <TextField label="Aufgaben: Filter" value={values.tasksQuery} onInput={set("tasksQuery")} />
       </fieldset>
       <div class="actions">
-        <button type="submit" disabled={busy}>
+        <button type="submit" class="primary-button" disabled={busy}>
           Speichern und prüfen
         </button>
-        <button type="button" onClick={() => setValues({ ...values, ...boardValues(DEFAULT_SETTINGS) })}>
+        <button type="button" class="secondary-button" onClick={() => setValues({ ...values, ...boardValues(DEFAULT_SETTINGS) })}>
           Standardwerte
         </button>
       </div>

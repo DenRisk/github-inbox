@@ -7,5 +7,5 @@ export function badgeFor(snapshot: Snapshot): { text: string; color: string } {
     return { text: "!", color: "#d1242f" };
   }
   const count = snapshot.reviews.length;
-  return { text: count ? String(count) : "", color: "#0969da" };
+  return { text: count ? String(count) : "", color: "#6e56f0" };
 }

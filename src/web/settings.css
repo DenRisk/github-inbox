@@ -1,6 +1,9 @@
 .back {
-  display: block;
+  display: flex;
   max-width: 560px;
-  margin: 0 auto 16px;
-  color: var(--accent);
+  margin: 0 auto var(--space-4);
+}
+
+.back a {
+  height: 36px;
 }

@@ -2,6 +2,7 @@ import { useCallback, useEffect, useRef, useState } from "preact/hooks";
 import { formatRelative } from "../domain/dates";
 import type { Snapshot } from "../sync/snapshot";
 import type { Todo } from "../todos/todo-store";
+import { Icon } from "../ui/Icon";
 import type { PopupPorts } from "./ports";
 import { WorkDetail } from "./WorkDetail";
 import { WorkList } from "./WorkList";
@@ -22,8 +23,9 @@ function ErrorBar({ snapshot, now, onOpenOptions }: { snapshot: Snapshot; now: D
   if (error.kind === "no-token") {
     return (
       <div class="error-bar" role="alert">
+        <Icon name="alert" />
         <span>Kein GitHub-Token hinterlegt.</span>
-        <button type="button" onClick={onOpenOptions}>
+        <button type="button" class="error-action" onClick={onOpenOptions}>
           Einstellungen öffnen
         </button>
       </div>
@@ -31,6 +33,7 @@ function ErrorBar({ snapshot, now, onOpenOptions }: { snapshot: Snapshot; now: D
   }
   return (
     <div class="error-bar" role="alert">
+      <Icon name="alert" />
       <span>{error.message}</span>
       {fetchedAt && <span class="stale">Stand: {formatRelative(new Date(fetchedAt), now)}, Aktualisieren fehlgeschlagen</span>}
     </div>
@@ -73,7 +76,7 @@ export function App({ ports }: { ports: PopupPorts }) {
     return unsubscribe;
   }, [ports, requestRefresh, reloadTodos]);
 
-  if (!snapshot) return <div class="popup" />;
+  if (!snapshot) return <div class="popup screen" />;
 
   const now = ports.now();
   const items = snapshot[tab];
@@ -82,23 +85,30 @@ export function App({ ports }: { ports: PopupPorts }) {
   const select = (id: string) => setSelectedByTab({ ...selectedByTab, [tab]: id });
 
   return (
-    <div class="popup">
+    <div class="popup screen">
       <header class="header">
-        <h1>Meine Arbeit</h1>
-        <span class="updated">
-          {snapshot.fetchedAt && `aktualisiert ${formatRelative(new Date(snapshot.fetchedAt), now)}`}
+        <span class="tile">
+          <Icon name="inbox" />
+        </span>
+        <div class="header-text">
+          <h1>Meine Arbeit</h1>
+          <span class="updated">
+            {snapshot.fetchedAt && `aktualisiert ${formatRelative(new Date(snapshot.fetchedAt), now)}`}
+          </span>
+        </div>
+        <span class="header-actions">
           <button
             type="button"
-            class={refreshing ? "refresh spinning" : "refresh"}
+            class={refreshing ? "icon-button refresh spinning" : "icon-button refresh"}
             aria-label="Aktualisieren"
             aria-busy={refreshing}
             disabled={refreshing}
             onClick={requestRefresh}
           >
-            ⟳
+            <Icon name="refresh" />
           </button>
-          <button type="button" class="settings" aria-label="Einstellungen" onClick={ports.openOptions}>
-            ⚙
+          <button type="button" class="icon-button" aria-label="Einstellungen" onClick={ports.openOptions}>
+            <Icon name="settings" />
           </button>
         </span>
       </header>
@@ -139,7 +149,12 @@ export function App({ ports }: { ports: PopupPorts }) {
               onOpen={ports.openUrl}
             />
           ) : (
-            <p class="hint">Eintrag anklicken, um Details und Todos zu sehen.</p>
+            <div class="hint">
+              <span class="tile">
+                <Icon name="inbox" />
+              </span>
+              <p>Eintrag anklicken, um Details und Todos zu sehen.</p>
+            </div>
           )}
         </main>
       </div>

@@ -1,6 +1,7 @@
 import { formatDate, formatDeadline, isOverdue } from "../domain/dates";
 import type { WorkItem } from "../domain/work-item";
 import { todoProgress, type Todo } from "../todos/todo-store";
+import { Icon } from "../ui/Icon";
 
 interface WorkListProps {
   items: WorkItem[];
@@ -11,17 +12,35 @@ interface WorkListProps {
   onSelect: (id: string) => void;
 }
 
+export function KindTile({ item }: { item: WorkItem }) {
+  return (
+    <span class={`tile ${item.kind}`}>
+      <Icon name={item.kind} />
+    </span>
+  );
+}
+
 export function DeadlineLabel({ deadline, today }: { deadline: string; today: Date }) {
   return (
-    <span class={isOverdue(deadline, today) ? "deadline overdue" : "deadline"}>
+    <span class={isOverdue(deadline, today) ? "badge deadline overdue" : "badge deadline"}>
+      <Icon name="clock" small />
       Deadline {formatDeadline(deadline)}
     </span>
   );
 }
 
+export function StatusLabel({ item }: { item: WorkItem }) {
+  return item.kind === "task" && item.status ? <span class="badge status">{item.status}</span> : null;
+}
+
 function TodoProgress({ todos }: { todos: Todo[] }) {
   const { done, total } = todoProgress(todos);
-  return total ? <span class="progress">☐ {done}/{total}</span> : null;
+  return total ? (
+    <span class="badge progress">
+      <Icon name="todos" small />
+      {done}/{total}
+    </span>
+  ) : null;
 }
 
 export function WorkList({ items, emptyText, selectedId, todosByItem, today, onSelect }: WorkListProps) {
@@ -35,15 +54,18 @@ export function WorkList({ items, emptyText, selectedId, todosByItem, today, onS
             class={item.id === selectedId ? "work-row selected" : "work-row"}
             onClick={() => onSelect(item.id)}
           >
-            <span class="work-title">{item.title}</span>
-            <span class="meta">
-              <span>
+            <KindTile item={item} />
+            <span class="work-body">
+              <span class="work-title">{item.title}</span>
+              <span class="work-source">
                 {item.repository} #{item.number}
               </span>
-              {item.deadline && <DeadlineLabel deadline={item.deadline} today={today} />}
-              {item.closedAt && <span>geschlossen {formatDate(item.closedAt)}</span>}
-              {item.kind === "task" && item.status && <span class="status">{item.status}</span>}
-              <TodoProgress todos={todosByItem[item.id] ?? []} />
+              <span class="meta">
+                {item.deadline && <DeadlineLabel deadline={item.deadline} today={today} />}
+                {item.closedAt && <span class="badge">geschlossen {formatDate(item.closedAt)}</span>}
+                <StatusLabel item={item} />
+                <TodoProgress todos={todosByItem[item.id] ?? []} />
+              </span>
             </span>
           </button>
         </li>

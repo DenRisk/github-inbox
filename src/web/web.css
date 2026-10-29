@@ -7,6 +7,10 @@ body {
   width: auto;
 }
 
+.popup {
+  padding: var(--space-5) var(--space-6);
+}
+
 .list-column {
   width: min(45%, 480px);
 }
@@ -17,6 +21,10 @@ body {
 }
 
 @media (max-width: 700px) {
+  .popup {
+    padding: var(--space-4);
+  }
+
   .columns {
     flex-direction: column;
   }
@@ -24,7 +32,5 @@ body {
   .list-column {
     width: auto;
     max-height: 50%;
-    border-right: 0;
-    border-bottom: 1px solid var(--border);
   }
 }

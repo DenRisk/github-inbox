@@ -1,0 +1,192 @@
+@import "@fontsource-variable/manrope";
+
+:root {
+  --canvas: #0d0c14;
+  --canvas-glow: #3a2d75;
+  --surface: #17161f;
+  --surface-raised: #1e1d28;
+  --line: #2a2935;
+  --line-strong: #3c3a4a;
+  --ink: #f4f3fa;
+  --ink-muted: #9d9ab0;
+  --ink-subtle: #8a879e;
+  --ink-accent: #b8b1f0;
+  --violet-deep: #5a43dc;
+  --violet: #6e56f0;
+  --violet-light: #a89bff;
+  --on-violet: #ffffff;
+  --positive: #4ade80;
+  --positive-soft: #1a3326;
+  --negative: #f87171;
+  --info: #60a5fa;
+  --info-soft: #1b2a45;
+  --amber: #e2cf6e;
+  --amber-soft: #33311b;
+
+  --font-sans: "Manrope Variable", ui-sans-serif, system-ui, -apple-system, "Segoe UI", sans-serif;
+
+  --space-1: 4px;
+  --space-2: 8px;
+  --space-3: 12px;
+  --space-4: 16px;
+  --space-5: 20px;
+  --space-6: 24px;
+  --space-8: 32px;
+
+  --radius-sm: 10px;
+  --radius-md: 14px;
+  --radius-lg: 18px;
+  --radius-pill: 999px;
+
+  --shadow-glow: 0 10px 30px rgba(110, 86, 240, 0.35);
+  --shadow-inset: inset 0 1px 0 rgba(255, 255, 255, 0.06);
+
+  color-scheme: dark;
+}
+
+* {
+  box-sizing: border-box;
+}
+
+body {
+  margin: 0;
+  font: 400 14px/20px var(--font-sans);
+  background: var(--canvas);
+  color: var(--ink);
+  -webkit-font-smoothing: antialiased;
+}
+
+button,
+input {
+  font: inherit;
+  color: inherit;
+}
+
+button {
+  background: none;
+  border: none;
+  padding: 0;
+  cursor: pointer;
+}
+
+:focus-visible {
+  outline: 2px solid var(--violet-light);
+  outline-offset: 2px;
+}
+
+.screen {
+  background: radial-gradient(120% 60% at 50% -10%, var(--canvas-glow) 0%, var(--canvas) 70%) no-repeat var(--canvas);
+}
+
+.icon {
+  width: 20px;
+  height: 20px;
+  flex: none;
+  fill: none;
+  stroke: currentColor;
+  stroke-width: 1.75;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+}
+
+.icon.small {
+  width: 14px;
+  height: 14px;
+}
+
+.tile {
+  display: grid;
+  place-items: center;
+  flex: none;
+  width: 36px;
+  height: 36px;
+  border-radius: var(--radius-sm);
+  background: var(--surface-raised);
+  color: var(--ink-muted);
+}
+
+.tile.review {
+  background: var(--info-soft);
+  color: var(--info);
+}
+
+.tile.task {
+  background: var(--amber-soft);
+  color: var(--amber);
+}
+
+.tile.closed {
+  background: var(--positive-soft);
+  color: var(--positive);
+}
+
+.icon-button {
+  display: grid;
+  place-items: center;
+  width: 40px;
+  height: 40px;
+  border: 1px solid var(--line-strong);
+  border-radius: var(--radius-pill);
+  background: var(--surface);
+  box-shadow: var(--shadow-inset);
+  color: var(--ink);
+  transition: background 0.15s ease-out;
+}
+
+.icon-button:hover {
+  background: var(--surface-raised);
+}
+
+.primary-button {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: var(--space-2);
+  height: 40px;
+  padding: 0 var(--space-5);
+  border: 0;
+  border-radius: var(--radius-pill);
+  background: linear-gradient(90deg, var(--violet-deep), var(--violet));
+  box-shadow: var(--shadow-glow), inset 0 1px 0 rgba(255, 255, 255, 0.25);
+  color: var(--on-violet);
+  font-weight: 600;
+  text-decoration: none;
+  transition: filter 0.15s ease-out;
+}
+
+.primary-button:hover {
+  filter: brightness(1.06);
+}
+
+.secondary-button {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--space-2);
+  height: 40px;
+  padding: 0 var(--space-4);
+  border: 1px solid var(--line-strong);
+  border-radius: var(--radius-pill);
+  background: var(--surface);
+  box-shadow: var(--shadow-inset);
+  color: var(--ink);
+  font-weight: 500;
+  text-decoration: none;
+  transition: background 0.15s ease-out;
+}
+
+.secondary-button:hover {
+  background: var(--surface-raised);
+}
+
+.primary-button:disabled,
+.secondary-button:disabled,
+.icon-button:disabled {
+  opacity: 0.4;
+  cursor: default;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  * {
+    transition: none !important;
+  }
+}

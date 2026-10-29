@@ -1,5 +1,6 @@
 import { useEffect, useState } from "preact/hooks";
 import type { Todo, TodoStore } from "../todos/todo-store";
+import { Icon } from "../ui/Icon";
 
 interface TodoListProps {
   itemId: string;
@@ -33,8 +34,11 @@ export function TodoList({ itemId, store, onChange }: TodoListProps) {
 
   return (
     <section class="todos">
-      <h3 class="section-label">Meine Todos</h3>
-      <ul>
+      <h3 class="section-title">
+        <Icon name="todos" />
+        Meine Todos
+      </h3>
+      <ul class="todo-list">
         {todos.map((todo) => (
           <li key={todo.id} class={todo.done ? "todo done" : "todo"}>
             <label>
@@ -51,19 +55,22 @@ export function TodoList({ itemId, store, onChange }: TodoListProps) {
               aria-label="Todo löschen"
               onClick={() => applyAndReload(store.remove(itemId, todo.id))}
             >
-              ×
+              <Icon name="remove" small />
             </button>
           </li>
         ))}
       </ul>
-      <input
-        class="todo-input"
-        type="text"
-        placeholder="Todo hinzufügen"
-        value={draft}
-        onInput={(event) => setDraft(event.currentTarget.value)}
-        onKeyDown={(event) => event.key === "Enter" && addDraft()}
-      />
+      <label class="todo-add">
+        <Icon name="plus" small />
+        <input
+          class="todo-input"
+          type="text"
+          placeholder="Todo hinzufügen"
+          value={draft}
+          onInput={(event) => setDraft(event.currentTarget.value)}
+          onKeyDown={(event) => event.key === "Enter" && addDraft()}
+        />
+      </label>
     </section>
   );
 }

@@ -9,7 +9,7 @@ describe("badgeFor", () => {
 
   it("shows the number of reviews", () => {
     const reviews = [item({ id: "a", kind: "review" }), item({ id: "b", kind: "review" })];
-    expect(badgeFor({ ...EMPTY_SNAPSHOT, reviews })).toEqual({ text: "2", color: "#0969da" });
+    expect(badgeFor({ ...EMPTY_SNAPSHOT, reviews })).toEqual({ text: "2", color: "#6e56f0" });
   });
 
   it("shows nothing for zero reviews", () => {

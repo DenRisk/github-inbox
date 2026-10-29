@@ -1,0 +1,38 @@
+const CIRCLE = "M12 2a10 10 0 1 0 0 20a10 10 0 1 0 0-20";
+
+const PATHS = {
+  inbox: [
+    "M22 12h-6l-2 3h-4l-2-3H2",
+    "M5.45 5.11 2 12v6a2 2 0 0 0 2 2h16a2 2 0 0 0 2-2v-6l-3.45-6.89A2 2 0 0 0 16.76 4H7.24a2 2 0 0 0-1.79 1.11z",
+  ],
+  refresh: [
+    "M3 12a9 9 0 0 1 9-9 9.75 9.75 0 0 1 6.74 2.74L21 8",
+    "M21 3v5h-5",
+    "M21 12a9 9 0 0 1-9 9 9.75 9.75 0 0 1-6.74-2.74L3 16",
+    "M8 16H3v5",
+  ],
+  settings: ["M20 7h-9", "M14 17H5", "M17 14a3 3 0 1 0 0 6a3 3 0 1 0 0-6", "M7 4a3 3 0 1 0 0 6a3 3 0 1 0 0-6"],
+  review: ["M18 15a3 3 0 1 0 0 6a3 3 0 1 0 0-6", "M6 3a3 3 0 1 0 0 6a3 3 0 1 0 0-6", "M13 6h3a2 2 0 0 1 2 2v7", "M6 9v12"],
+  task: [CIRCLE, "M12 11a1 1 0 1 0 0 2a1 1 0 1 0 0-2"],
+  closed: [CIRCLE, "m9 12 2 2 4-4"],
+  clock: [CIRCLE, "M12 6v6l4 2"],
+  external: ["M15 3h6v6", "M10 14 21 3", "M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6"],
+  todos: ["m3 17 2 2 4-4", "m3 7 2 2 4-4", "M13 6h8", "M13 12h8", "M13 18h8"],
+  check: ["M20 6 9 17l-5-5"],
+  plus: ["M5 12h14", "M12 5v14"],
+  remove: ["M18 6 6 18", "m6 6 12 12"],
+  alert: [CIRCLE, "M12 8v4", "M12 16h.01"],
+  back: ["m12 19-7-7 7-7", "M19 12H5"],
+};
+
+export type IconName = keyof typeof PATHS;
+
+export function Icon({ name, small }: { name: IconName; small?: boolean }) {
+  return (
+    <svg class={small ? "icon small" : "icon"} viewBox="0 0 24 24" aria-hidden="true">
+      {PATHS[name].map((path) => (
+        <path key={path} d={path} />
+      ))}
+    </svg>
+  );
+}
