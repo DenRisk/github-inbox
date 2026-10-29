@@ -15,7 +15,7 @@ function reference(pullRequest: LinkedPullRequest, item: WorkItem): string {
 
 export function PullRequestList({ item, onOpen }: { item: WorkItem; onOpen: (url: string) => void }) {
   return (
-    <section class="pull-requests">
+    <section class="detail-section">
       <h3 class="section-title">
         <Icon name="review" />
         Pull Requests

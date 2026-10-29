@@ -23,6 +23,7 @@ const PATHS = {
   remove: ["M18 6 6 18", "m6 6 12 12"],
   alert: [CIRCLE, "M12 8v4", "M12 16h.01"],
   back: ["m12 19-7-7 7-7", "M19 12H5"],
+  description: ["M21 6H3", "M15 12H3", "M17 18H3"],
   sun: [
     "M12 8a4 4 0 1 0 0 8a4 4 0 1 0 0-8",
     "M12 2v2",

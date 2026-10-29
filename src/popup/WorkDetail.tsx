@@ -26,27 +26,34 @@ export function WorkDetail({ item, today, todos, onTodosChange, onOpen }: WorkDe
             {item.repository} #{item.number} · erstellt {formatDate(item.createdAt)}
             {item.closedAt && ` · geschlossen ${formatDate(item.closedAt)}`}
           </span>
+          {(item.deadline || (item.kind === "task" && item.status)) && (
+            <p class="meta detail-meta">
+              {item.deadline && <DeadlineLabel deadline={item.deadline} today={today} />}
+              <StatusLabel item={item} />
+            </p>
+          )}
         </div>
+        <a
+          class="icon-button open-link"
+          href={item.url}
+          aria-label="Auf GitHub öffnen"
+          title="Auf GitHub öffnen"
+          onClick={(event) => {
+            event.preventDefault();
+            onOpen(item.url);
+          }}
+        >
+          <Icon name="external" />
+        </a>
       </header>
-      {(item.deadline || (item.kind === "task" && item.status)) && (
-        <p class="meta">
-          {item.deadline && <DeadlineLabel deadline={item.deadline} today={today} />}
-          <StatusLabel item={item} />
-        </p>
-      )}
-      <a
-        class="primary-button open-link"
-        href={item.url}
-        onClick={(event) => {
-          event.preventDefault();
-          onOpen(item.url);
-        }}
-      >
-        Auf GitHub öffnen
-        <Icon name="external" small />
-      </a>
       {item.kind !== "review" && <PullRequestList item={item} onOpen={onOpen} />}
-      <p class={description ? "description" : "description missing"}>{description || "Keine Beschreibung."}</p>
+      <section class="detail-section">
+        <h3 class="section-title">
+          <Icon name="description" />
+          Beschreibung
+        </h3>
+        <p class={description ? "description" : "description missing"}>{description || "Keine Beschreibung."}</p>
+      </section>
       <TodoList itemId={item.id} store={todos} onChange={onTodosChange} />
     </article>
   );

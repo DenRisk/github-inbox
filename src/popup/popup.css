@@ -240,7 +240,8 @@ ul {
   display: none;
 }
 
-.work-body .meta {
+.work-body .meta,
+.detail-meta {
   margin-top: var(--space-1);
 }
 
@@ -309,9 +310,8 @@ ul {
 .detail {
   display: flex;
   flex-direction: column;
-  align-items: flex-start;
-  gap: var(--space-3);
-  padding: var(--space-4);
+  gap: var(--space-5);
+  padding: var(--space-5);
 }
 
 .detail-header {
@@ -322,6 +322,7 @@ ul {
 
 .detail-heading {
   display: flex;
+  flex: 1;
   flex-direction: column;
   gap: 2px;
   min-width: 0;
@@ -336,16 +337,19 @@ ul {
 }
 
 .open-link {
-  height: 36px;
-  padding: 0 var(--space-4);
-  font-size: 14px;
+  flex: none;
+}
+
+.detail-section {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-3);
+  padding-top: var(--space-5);
+  border-top: 1px solid var(--line);
 }
 
 .description {
-  width: 100%;
   margin: 0;
-  padding-top: var(--space-3);
-  border-top: 1px solid var(--line);
   color: var(--ink);
   white-space: pre-wrap;
   overflow-wrap: anywhere;
@@ -353,15 +357,6 @@ ul {
 
 .description.missing {
   font-style: italic;
-}
-
-.todos {
-  display: flex;
-  flex-direction: column;
-  gap: var(--space-2);
-  width: 100%;
-  padding-top: var(--space-3);
-  border-top: 1px solid var(--line);
 }
 
 .section-title {
@@ -381,7 +376,7 @@ ul {
 .todo-list {
   display: flex;
   flex-direction: column;
-  gap: var(--space-1);
+  gap: var(--space-2);
 }
 
 .todo-list:empty {
@@ -393,7 +388,7 @@ ul {
   align-items: center;
   justify-content: space-between;
   gap: var(--space-2);
-  padding: 6px var(--space-2) 6px var(--space-3);
+  padding: var(--space-2) var(--space-2) var(--space-2) var(--space-3);
   border-radius: var(--radius-sm);
   background: var(--surface-raised);
 }
@@ -463,26 +458,17 @@ ul {
   color: var(--ink-subtle);
 }
 
-.pull-requests {
-  display: flex;
-  flex-direction: column;
-  gap: var(--space-2);
-  width: 100%;
-  padding-top: var(--space-3);
-  border-top: 1px solid var(--line);
-}
-
 .pull-request-list {
   display: flex;
   flex-direction: column;
-  gap: var(--space-1);
+  gap: var(--space-2);
 }
 
 .pull-request {
   display: flex;
   align-items: center;
-  gap: var(--space-2);
-  padding: 6px var(--space-3);
+  gap: var(--space-3);
+  padding: 10px var(--space-3);
   border-radius: var(--radius-sm);
   background: var(--surface-raised);
   color: var(--ink);

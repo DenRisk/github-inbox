@@ -129,7 +129,7 @@ describe("App", () => {
     expect(await screen.findByText(HINT)).toBeTruthy();
     fireEvent.click(screen.getByText("Sample review"));
     expect(screen.getByText("Review description")).toBeTruthy();
-    expect(screen.getByText("Auf GitHub öffnen")).toBeTruthy();
+    expect(screen.getByRole("link", { name: "Auf GitHub öffnen" })).toBeTruthy();
     expect(screen.queryByText(HINT)).toBeNull();
   });
 
@@ -216,7 +216,7 @@ describe("App", () => {
     const { ports } = fakePorts(snapshot);
     render(<App ports={ports} />);
     fireEvent.click(await screen.findByText("Sample review"));
-    fireEvent.click(screen.getByText("Auf GitHub öffnen"));
+    fireEvent.click(screen.getByRole("link", { name: "Auf GitHub öffnen" }));
     expect(ports.openUrl).toHaveBeenCalledWith("https://github.com/acme/sample-repo/pull/5");
   });
 
@@ -236,6 +236,16 @@ describe("App", () => {
     expect(screen.getByText("other-repo#4")).toBeTruthy();
     fireEvent.click(screen.getByText("Sample fix"));
     expect(ports.openUrl).toHaveBeenCalledWith("https://github.com/acme/sample-repo/pull/3");
+  });
+
+  it("gives every section of a selected task its own heading", async () => {
+    const { ports } = fakePorts(snapshot);
+    render(<App ports={ports} />);
+    fireEvent.click(await screen.findByRole("tab", { name: /Aufgaben/ }));
+    fireEvent.click(screen.getByText("Sample task"));
+    for (const name of ["Pull Requests", "Beschreibung", "Meine Todos"]) {
+      expect(screen.getByRole("heading", { level: 3, name })).toBeTruthy();
+    }
   });
 
   it("says when no pull request belongs to a task", async () => {

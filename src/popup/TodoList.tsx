@@ -33,7 +33,7 @@ export function TodoList({ itemId, store, onChange }: TodoListProps) {
   }
 
   return (
-    <section class="todos">
+    <section class="detail-section">
       <h3 class="section-title">
         <Icon name="todos" />
         Meine Todos
