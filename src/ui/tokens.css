@@ -44,6 +44,32 @@
   color-scheme: dark;
 }
 
+:root.theme-light {
+  --canvas: #f6f5fb;
+  --canvas-glow: #e3dcff;
+  --surface: #ffffff;
+  --surface-raised: #f0eef8;
+  --line: #e4e2ee;
+  --line-strong: #cfcbdc;
+  --ink: #17161f;
+  --ink-muted: #4a475c;
+  --ink-subtle: #5f5c72;
+  --ink-accent: #5a43dc;
+  --violet-light: #5a43dc;
+  --positive: #166534;
+  --positive-soft: #dcf5e4;
+  --negative: #c42b2b;
+  --info: #1d4ed8;
+  --info-soft: #dde8fd;
+  --amber: #7a5d00;
+  --amber-soft: #fbf1c7;
+
+  --shadow-glow: 0 8px 24px rgba(110, 86, 240, 0.28);
+  --shadow-inset: 0 1px 2px rgba(23, 22, 31, 0.06);
+
+  color-scheme: light;
+}
+
 * {
   box-sizing: border-box;
 }

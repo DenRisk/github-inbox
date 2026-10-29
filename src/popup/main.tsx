@@ -3,8 +3,11 @@ import { createChromeStore } from "../storage/key-value-store";
 import { loadSnapshot, SNAPSHOT_KEY, type Snapshot } from "../sync/snapshot";
 import { TodoStore } from "../todos/todo-store";
 import { App } from "./App";
+import { applyStartTheme } from "../ui/theme";
 import type { PopupPorts } from "./ports";
 import "./popup.css";
+
+applyStartTheme();
 
 const store = createChromeStore();
 

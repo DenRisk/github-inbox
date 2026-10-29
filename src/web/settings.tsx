@@ -3,7 +3,10 @@ import { OptionsForm } from "../options/OptionsForm";
 import "../options/options.css";
 import { createWebStorageStore } from "../storage/key-value-store";
 import { Icon } from "../ui/Icon";
+import { applyStartTheme } from "../ui/theme";
 import "./settings.css";
+
+applyStartTheme();
 
 render(
   <>

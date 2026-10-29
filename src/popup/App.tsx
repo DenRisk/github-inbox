@@ -3,6 +3,7 @@ import { formatRelative } from "../domain/dates";
 import type { Snapshot } from "../sync/snapshot";
 import type { Todo } from "../todos/todo-store";
 import { Icon } from "../ui/Icon";
+import { ThemeToggle } from "../ui/ThemeToggle";
 import type { PopupPorts } from "./ports";
 import { WorkDetail } from "./WorkDetail";
 import { WorkList } from "./WorkList";
@@ -97,6 +98,7 @@ export function App({ ports }: { ports: PopupPorts }) {
           </span>
         </div>
         <span class="header-actions">
+          <ThemeToggle />
           <button
             type="button"
             class={refreshing ? "icon-button refresh spinning" : "icon-button refresh"}

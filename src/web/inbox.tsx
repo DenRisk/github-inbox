@@ -2,8 +2,11 @@ import { render } from "preact";
 import { App } from "../popup/App";
 import "../popup/popup.css";
 import { createWebStorageStore } from "../storage/key-value-store";
+import { applyStartTheme } from "../ui/theme";
 import { createWebPorts } from "./web-ports";
 import "./web.css";
+
+applyStartTheme();
 
 const REFRESH_INTERVAL_MS = 5 * 60_000;
 
