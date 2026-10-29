@@ -38,6 +38,23 @@
   --radius-lg: 18px;
   --radius-pill: 999px;
 
+  --status-gray-bg: #2a2935;
+  --status-gray: #d4d2e0;
+  --status-blue-bg: #1b2a45;
+  --status-blue: #7cb4fb;
+  --status-green-bg: #1a3326;
+  --status-green: #5fe08f;
+  --status-yellow-bg: #33311b;
+  --status-yellow: #e2cf6e;
+  --status-orange-bg: #3a2817;
+  --status-orange: #f5a55a;
+  --status-red-bg: #3d1c1e;
+  --status-red: #fb8a8a;
+  --status-pink-bg: #3a1a33;
+  --status-pink: #f28fd6;
+  --status-purple-bg: #2a2150;
+  --status-purple: #b9adff;
+
   --shadow-glow: 0 10px 30px rgba(110, 86, 240, 0.35);
   --shadow-inset: inset 0 1px 0 rgba(255, 255, 255, 0.06);
 
@@ -63,6 +80,23 @@
   --info-soft: #dde8fd;
   --amber: #7a5d00;
   --amber-soft: #fbf1c7;
+
+  --status-gray-bg: #ececf2;
+  --status-gray: #4a475c;
+  --status-blue-bg: #dde8fd;
+  --status-blue: #1d4ed8;
+  --status-green-bg: #dcf5e4;
+  --status-green: #166534;
+  --status-yellow-bg: #fbf1c7;
+  --status-yellow: #7a5d00;
+  --status-orange-bg: #fde6d2;
+  --status-orange: #9a3d00;
+  --status-red-bg: #fde0e0;
+  --status-red: #b42323;
+  --status-pink-bg: #fbe0f3;
+  --status-pink: #a3206f;
+  --status-purple-bg: #ebe5ff;
+  --status-purple: #5a35c8;
 
   --shadow-glow: 0 8px 24px rgba(110, 86, 240, 0.28);
   --shadow-inset: 0 1px 2px rgba(23, 22, 31, 0.06);

@@ -273,7 +273,55 @@ ul {
 }
 
 .badge.status {
-  color: var(--ink);
+  font-weight: 600;
+}
+
+.badge.status-gray {
+  border-color: var(--status-gray-bg);
+  background: var(--status-gray-bg);
+  color: var(--status-gray);
+}
+
+.badge.status-blue {
+  border-color: var(--status-blue-bg);
+  background: var(--status-blue-bg);
+  color: var(--status-blue);
+}
+
+.badge.status-green {
+  border-color: var(--status-green-bg);
+  background: var(--status-green-bg);
+  color: var(--status-green);
+}
+
+.badge.status-yellow {
+  border-color: var(--status-yellow-bg);
+  background: var(--status-yellow-bg);
+  color: var(--status-yellow);
+}
+
+.badge.status-orange {
+  border-color: var(--status-orange-bg);
+  background: var(--status-orange-bg);
+  color: var(--status-orange);
+}
+
+.badge.status-red {
+  border-color: var(--status-red-bg);
+  background: var(--status-red-bg);
+  color: var(--status-red);
+}
+
+.badge.status-pink {
+  border-color: var(--status-pink-bg);
+  background: var(--status-pink-bg);
+  color: var(--status-pink);
+}
+
+.badge.status-purple {
+  border-color: var(--status-purple-bg);
+  background: var(--status-purple-bg);
+  color: var(--status-purple);
 }
 
 .badge.progress {

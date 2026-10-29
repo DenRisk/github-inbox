@@ -14,7 +14,7 @@ const review = item({
   url: "https://github.com/acme/sample-repo/pull/5",
   number: 5,
 });
-const task = item({ id: "I_1", kind: "task", title: "Sample task", status: "In Review" });
+const task = item({ id: "I_1", kind: "task", title: "Sample task", status: "In Review", statusColor: "PINK" });
 const closedIssue = item({
   id: "I_2",
   kind: "closed",
@@ -150,6 +150,14 @@ describe("App", () => {
     fireEvent.click(await screen.findByRole("tab", { name: /Aufgaben/ }));
     fireEvent.click(screen.getByText("Sample task"));
     expect(screen.getAllByText("In Review")).toHaveLength(2);
+  });
+
+  it("colors the status like the board does", async () => {
+    const { ports } = fakePorts({ ...snapshot, tasks: [task, item({ id: "I_3", title: "Unknown color", status: "Todo" })] });
+    render(<App ports={ports} />);
+    fireEvent.click(await screen.findByRole("tab", { name: /Aufgaben/ }));
+    expect(screen.getByText("In Review").classList.contains("status-pink")).toBe(true);
+    expect(screen.getByText("Todo").classList.contains("status-gray")).toBe(true);
   });
 
   it("hides the board status of a selected review", async () => {

@@ -1,5 +1,7 @@
 export type WorkItemKind = "review" | "task" | "closed";
 
+export type StatusColor = "GRAY" | "BLUE" | "GREEN" | "YELLOW" | "ORANGE" | "RED" | "PINK" | "PURPLE";
+
 export type PullRequestState = "open" | "draft" | "merged" | "closed";
 
 export interface LinkedPullRequest {
@@ -22,6 +24,7 @@ export interface WorkItem {
   repository: string;
   number: number;
   status: string | null;
+  statusColor: StatusColor | null;
   deadline: string | null;
   pullRequests: LinkedPullRequest[];
 }

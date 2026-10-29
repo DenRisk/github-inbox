@@ -31,7 +31,9 @@ export function DeadlineLabel({ deadline, today }: { deadline: string; today: Da
 }
 
 export function StatusLabel({ item }: { item: WorkItem }) {
-  return item.kind === "task" && item.status ? <span class="badge status">{item.status}</span> : null;
+  if (item.kind !== "task" || !item.status) return null;
+  const color = (item.statusColor ?? "GRAY").toLowerCase();
+  return <span class={`badge status status-${color}`}>{item.status}</span>;
 }
 
 function TodoProgress({ todos }: { todos: Todo[] }) {

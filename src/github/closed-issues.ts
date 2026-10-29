@@ -59,6 +59,7 @@ function toClosedItem(issue: IssueNode): WorkItem {
     repository: issue.repository.name,
     number: issue.number,
     status: null,
+    statusColor: null,
     deadline: null,
     pullRequests: toLinkedPullRequests(issue),
   };

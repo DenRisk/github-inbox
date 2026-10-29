@@ -12,6 +12,7 @@ export function item(overrides: Partial<WorkItem> = {}): WorkItem {
     repository: "sample-repo",
     number: 1,
     status: null,
+    statusColor: null,
     deadline: null,
     pullRequests: [],
     ...overrides,

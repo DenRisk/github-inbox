@@ -16,18 +16,18 @@ export const SNAPSHOT_KEY = "snapshot";
 
 export const EMPTY_SNAPSHOT: Snapshot = { reviews: [], tasks: [], closed: [], fetchedAt: null, error: null };
 
-type StoredItem = Omit<WorkItem, "pullRequests"> & Partial<Pick<WorkItem, "pullRequests">>;
+type StoredItem = Omit<WorkItem, "pullRequests" | "statusColor"> & Partial<Pick<WorkItem, "pullRequests" | "statusColor">>;
 
-function withPullRequests(items: StoredItem[]): WorkItem[] {
-  return items.map((item) => ({ ...item, pullRequests: item.pullRequests ?? [] }));
+function withCurrentFields(items: StoredItem[]): WorkItem[] {
+  return items.map((item) => ({ ...item, pullRequests: item.pullRequests ?? [], statusColor: item.statusColor ?? null }));
 }
 
 export async function loadSnapshot(store: KeyValueStore): Promise<Snapshot> {
   const stored = { ...EMPTY_SNAPSHOT, ...(await store.get<Partial<Snapshot>>(SNAPSHOT_KEY)) };
   return {
     ...stored,
-    reviews: withPullRequests(stored.reviews),
-    tasks: withPullRequests(stored.tasks),
-    closed: withPullRequests(stored.closed),
+    reviews: withCurrentFields(stored.reviews),
+    tasks: withCurrentFields(stored.tasks),
+    closed: withCurrentFields(stored.closed),
   };
 }

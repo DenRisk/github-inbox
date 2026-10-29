@@ -46,7 +46,7 @@ const params = {
 describe("fetchProjectItems", () => {
   it("maps an issue item to a work item", async () => {
     const fetchFn = fakeFetch(
-      page([{ status: { name: "In Review" }, deadline: { date: "2026-10-24" }, content: issueContent }]),
+      page([{ status: { name: "In Review", color: "PINK" }, deadline: { date: "2026-10-24" }, content: issueContent }]),
     );
     expect(await fetchProjectItems({ ...params, fetchFn })).toEqual([
       {
@@ -60,6 +60,7 @@ describe("fetchProjectItems", () => {
         repository: "sample-repo",
         number: 7,
         status: "In Review",
+        statusColor: "PINK",
         deadline: "2026-10-24",
         pullRequests: [],
       },
@@ -89,10 +90,17 @@ describe("fetchProjectItems", () => {
     expect(review.kind).toBe("review");
   });
 
+  it("ignores a board color it does not know", async () => {
+    const fetchFn = fakeFetch(page([{ status: { name: "Todo", color: "TEAL" }, deadline: null, content: issueContent }]));
+    const [mapped] = await fetchProjectItems({ ...params, fetchFn });
+    expect(mapped.statusColor).toBeNull();
+  });
+
   it("maps empty field values to null", async () => {
     const fetchFn = fakeFetch(page([{ status: {}, deadline: null, content: issueContent }]));
     const [mapped] = await fetchProjectItems({ ...params, fetchFn });
     expect(mapped.status).toBeNull();
+    expect(mapped.statusColor).toBeNull();
     expect(mapped.deadline).toBeNull();
   });
 

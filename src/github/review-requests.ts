@@ -1,4 +1,5 @@
 import type { WorkItem } from "../domain/work-item";
+import { STATUS_FIELD, statusColorOf, type StatusValue } from "./board-status";
 import { postGraphql, type GithubAccess, type GraphqlError } from "./graphql-client";
 
 const REVIEW_REQUESTS_QUERY = `
@@ -12,7 +13,7 @@ query ReviewRequests($search: String!, $after: String) {
         projectItems(first: 20) {
           nodes {
             project { number }
-            status: fieldValueByName(name: "Status") { ... on ProjectV2ItemFieldSingleSelectValue { name } }
+            ${STATUS_FIELD}
             deadline: fieldValueByName(name: "Deadline-EOBD") { ... on ProjectV2ItemFieldDateValue { date } }
           }
         }
@@ -23,7 +24,7 @@ query ReviewRequests($search: String!, $after: String) {
 
 interface BoardItem {
   project: { number: number };
-  status: { name?: string } | null;
+  status: StatusValue | null;
   deadline: { date?: string } | null;
 }
 
@@ -68,6 +69,7 @@ function toReview(pullRequest: PullRequestNode, projectNumber: number): WorkItem
     repository: pullRequest.repository.name,
     number: pullRequest.number,
     status: boardItem?.status?.name ?? null,
+    statusColor: statusColorOf(boardItem?.status),
     deadline: boardItem?.deadline?.date ?? null,
     pullRequests: [],
   };

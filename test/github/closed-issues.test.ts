@@ -45,6 +45,7 @@ describe("fetchClosedIssues", () => {
         repository: "sample-repo",
         number: 7,
         status: null,
+        statusColor: null,
         deadline: null,
         pullRequests: [],
       },

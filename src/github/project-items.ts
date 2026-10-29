@@ -1,4 +1,5 @@
 import type { WorkItem, WorkItemKind } from "../domain/work-item";
+import { STATUS_FIELD, statusColorOf, type StatusValue } from "./board-status";
 import { GithubError, postGraphql, type GithubAccess, type GraphqlError } from "./graphql-client";
 import {
   LINKED_PULL_REQUEST_FRAGMENT,
@@ -14,7 +15,7 @@ query ProjectItems($org: String!, $number: Int!, $query: String!, $after: String
       items(first: 100, after: $after, query: $query) {
         pageInfo { hasNextPage endCursor }
         nodes {
-          status: fieldValueByName(name: "Status") { ... on ProjectV2ItemFieldSingleSelectValue { name } }
+          ${STATUS_FIELD}
           deadline: fieldValueByName(name: "Deadline-EOBD") { ... on ProjectV2ItemFieldDateValue { date } }
           content {
             __typename
@@ -40,7 +41,7 @@ interface ItemContent extends LinkedPullRequestsNode {
 }
 
 interface ItemNode {
-  status: { name?: string } | null;
+  status: StatusValue | null;
   deadline: { date?: string } | null;
   content: ItemContent | null;
 }
@@ -76,6 +77,7 @@ function toWorkItem(node: ItemNode & { content: ItemContent }, kind: WorkItemKin
     repository: content.repository.name,
     number: content.number,
     status: node.status?.name ?? null,
+    statusColor: statusColorOf(node.status),
     deadline: node.deadline?.date ?? null,
     pullRequests: toLinkedPullRequests(content),
   };

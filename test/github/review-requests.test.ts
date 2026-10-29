@@ -17,7 +17,7 @@ const pullRequest = {
 function boardItem(projectNumber: number, status: string | null, deadline: string | null) {
   return {
     project: { number: projectNumber },
-    status: status ? { name: status } : null,
+    status: status ? { name: status, color: "ORANGE" } : null,
     deadline: deadline ? { date: deadline } : null,
   };
 }
@@ -50,6 +50,7 @@ describe("fetchReviewRequests", () => {
         repository: "sample-repo",
         number: 7,
         status: "Inbox",
+        statusColor: "ORANGE",
         deadline: "2026-10-24",
         pullRequests: [],
       },

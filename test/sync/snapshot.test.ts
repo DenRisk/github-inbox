@@ -7,11 +7,12 @@ describe("loadSnapshot", () => {
     expect(await loadSnapshot(createMemoryStore())).toEqual(EMPTY_SNAPSHOT);
   });
 
-  it("gives items stored before pull requests were fetched an empty list", async () => {
-    const { pullRequests: _, ...storedTask } = item({ id: "I_1" });
+  it("gives items stored before pull requests and status colors were fetched empty values", async () => {
+    const { pullRequests: _, statusColor: __, ...storedTask } = item({ id: "I_1" });
     const store = createMemoryStore({ [SNAPSHOT_KEY]: { tasks: [storedTask] } });
     const snapshot = await loadSnapshot(store);
     expect(snapshot.tasks[0].pullRequests).toEqual([]);
+    expect(snapshot.tasks[0].statusColor).toBeNull();
     expect(snapshot.reviews).toEqual([]);
   });
 
