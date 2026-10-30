@@ -1,6 +1,6 @@
 import { formatDate, formatDeadline, isOverdue } from "../domain/dates";
 import { mergeProgress } from "../domain/merge-progress";
-import { groupStacks } from "../domain/stacks";
+import { groupStacks, singlesBeforeStacks } from "../domain/stacks";
 import type { WorkItem } from "../domain/work-item";
 import { todoProgress, type Todo } from "../todos/todo-store";
 import { Icon } from "../ui/Icon";
@@ -115,7 +115,7 @@ export function WorkList({ items, emptyText, selectedId, todosByItem, today, onS
   );
   return (
     <ul class="work-list">
-      {groupStacks(items).map((group) =>
+      {singlesBeforeStacks(groupStacks(items)).map((group) =>
         group.isStack ? (
           <li key={group.items[0].id} class="stack">
             <StackHeader size={group.items.length} base={group.base} />

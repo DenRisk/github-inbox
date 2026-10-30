@@ -316,6 +316,9 @@ describe("App", () => {
     expect(screen.getByText("auf main")).toBeTruthy();
     const titles = [...document.querySelectorAll(".stack .work-title")].map((title) => title.textContent);
     expect(titles).toEqual(["Lower step", "Upper step"]);
+    const firstEntry = document.querySelector(".work-list > li");
+    expect(firstEntry?.classList.contains("stack")).toBe(false);
+    expect(firstEntry?.textContent).toContain("Sample review");
     fireEvent.click(screen.getByText("Upper step"));
     expect(screen.getByText("Upper description")).toBeTruthy();
   });

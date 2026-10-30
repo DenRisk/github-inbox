@@ -1,4 +1,4 @@
-import { groupStacks } from "../domain/stacks";
+import { groupStacks, singlesBeforeStacks } from "../domain/stacks";
 import type { LinkedPullRequest, PullRequestState, ReviewState, WorkItem } from "../domain/work-item";
 import { Icon } from "../ui/Icon";
 import { StackHeader } from "./StackHeader";
@@ -69,7 +69,7 @@ export function PullRequestList({ item, onOpen }: { item: WorkItem; onOpen: (url
       </h3>
       {item.pullRequests.length ? (
         <ul class="pull-request-list">
-          {groupStacks(item.pullRequests).map((group) =>
+          {singlesBeforeStacks(groupStacks(item.pullRequests)).map((group) =>
             group.isStack ? (
               <li key={group.items[0].url} class="stack pull-request-stack">
                 <StackHeader size={group.items.length} base={group.base} />

@@ -55,3 +55,7 @@ export function groupStacks<T extends Stackable>(items: T[]): StackGroup<T>[] {
   }
   return groups;
 }
+
+export function singlesBeforeStacks<T extends Stackable>(groups: StackGroup<T>[]): StackGroup<T>[] {
+  return [...groups.filter((group) => !group.isStack), ...groups.filter((group) => group.isStack)];
+}

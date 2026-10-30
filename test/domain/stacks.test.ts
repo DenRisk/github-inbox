@@ -1,4 +1,4 @@
-import { groupStacks, type StackGroup } from "../../src/domain/stacks";
+import { groupStacks, singlesBeforeStacks, type StackGroup } from "../../src/domain/stacks";
 import type { WorkItem } from "../../src/domain/work-item";
 import { item } from "../support/work-item";
 
@@ -60,5 +60,26 @@ describe("groupStacks", () => {
 
   it("keeps items without branches on their own", () => {
     expect(shape(groupStacks([item({ id: "I_1" }), item({ id: "I_2" })]))).toEqual([["I_1"], ["I_2"]]);
+  });
+});
+
+describe("singlesBeforeStacks", () => {
+  it("lists the pull requests on their own first and the stacks after them, each in their order", () => {
+    const groups = groupStacks([
+      pullRequest("SINGLE_1", "main", "single-1"),
+      pullRequest("FIRST_STACK_TOP", "a-1", "a-2"),
+      pullRequest("SINGLE_2", "main", "single-2"),
+      pullRequest("FIRST_STACK_BOTTOM", "main", "a-1"),
+      pullRequest("SECOND_STACK_BOTTOM", "main", "b-1"),
+      pullRequest("SECOND_STACK_TOP", "b-1", "b-2"),
+      pullRequest("SINGLE_3", "main", "single-3"),
+    ]);
+    expect(shape(singlesBeforeStacks(groups))).toEqual([
+      ["SINGLE_1"],
+      ["SINGLE_2"],
+      ["SINGLE_3"],
+      ["FIRST_STACK_BOTTOM", "FIRST_STACK_TOP"],
+      ["SECOND_STACK_BOTTOM", "SECOND_STACK_TOP"],
+    ]);
   });
 });
