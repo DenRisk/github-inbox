@@ -27,4 +27,5 @@ export interface WorkItem {
   statusColor: StatusColor | null;
   deadline: string | null;
   pullRequests: LinkedPullRequest[];
+  branches: { base: string; head: string } | null;
 }

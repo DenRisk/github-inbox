@@ -271,6 +271,19 @@ describe("App", () => {
     expect(screen.queryByText("Pull Requests")).toBeNull();
   });
 
+  it("groups stacked reviews in order and keeps them selectable", async () => {
+    const lower = item({ id: "PR_2", kind: "review", title: "Lower step", branches: { base: "main", head: "step-1" } });
+    const upper = item({ id: "PR_3", kind: "review", title: "Upper step", body: "Upper description", branches: { base: "step-1", head: "step-2" } });
+    const { ports } = fakePorts({ ...snapshot, reviews: [upper, review, lower] });
+    render(<App ports={ports} />);
+    expect(await screen.findByText("Stack mit 2 PRs")).toBeTruthy();
+    expect(screen.getByText("auf main")).toBeTruthy();
+    const titles = [...document.querySelectorAll(".stack .work-title")].map((title) => title.textContent);
+    expect(titles).toEqual(["Lower step", "Upper step"]);
+    fireEvent.click(screen.getByText("Upper step"));
+    expect(screen.getByText("Upper description")).toBeTruthy();
+  });
+
   it("shows the todo progress of an item in the list", async () => {
     const { ports } = fakePorts(snapshot);
     await ports.todos.add("PR_1", "Check on phone");

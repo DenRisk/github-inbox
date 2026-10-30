@@ -62,6 +62,7 @@ function toClosedItem(issue: IssueNode): WorkItem {
     statusColor: null,
     deadline: null,
     pullRequests: toLinkedPullRequests(issue),
+    branches: null,
   };
 }
 

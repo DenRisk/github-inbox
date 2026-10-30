@@ -48,6 +48,7 @@ describe("fetchClosedIssues", () => {
         statusColor: null,
         deadline: null,
         pullRequests: [],
+        branches: null,
       },
     ]);
   });

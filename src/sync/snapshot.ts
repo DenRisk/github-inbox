@@ -16,10 +16,17 @@ export const SNAPSHOT_KEY = "snapshot";
 
 export const EMPTY_SNAPSHOT: Snapshot = { reviews: [], tasks: [], closed: [], fetchedAt: null, error: null };
 
-type StoredItem = Omit<WorkItem, "pullRequests" | "statusColor"> & Partial<Pick<WorkItem, "pullRequests" | "statusColor">>;
+type AddedLater = "pullRequests" | "statusColor" | "branches";
+
+type StoredItem = Omit<WorkItem, AddedLater> & Partial<Pick<WorkItem, AddedLater>>;
 
 function withCurrentFields(items: StoredItem[]): WorkItem[] {
-  return items.map((item) => ({ ...item, pullRequests: item.pullRequests ?? [], statusColor: item.statusColor ?? null }));
+  return items.map((item) => ({
+    ...item,
+    pullRequests: item.pullRequests ?? [],
+    statusColor: item.statusColor ?? null,
+    branches: item.branches ?? null,
+  }));
 }
 
 export async function loadSnapshot(store: KeyValueStore): Promise<Snapshot> {

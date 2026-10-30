@@ -63,6 +63,7 @@ describe("fetchProjectItems", () => {
         statusColor: "PINK",
         deadline: "2026-10-24",
         pullRequests: [],
+        branches: null,
       },
     ]);
   });

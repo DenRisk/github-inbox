@@ -80,6 +80,7 @@ function toWorkItem(node: ItemNode & { content: ItemContent }, kind: WorkItemKin
     statusColor: statusColorOf(node.status),
     deadline: node.deadline?.date ?? null,
     pullRequests: toLinkedPullRequests(content),
+    branches: null,
   };
 }
 

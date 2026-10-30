@@ -11,6 +11,8 @@ const pullRequest = {
   createdAt: "2026-10-12T11:20:38Z",
   number: 7,
   repository: { name: "sample-repo" },
+  baseRefName: "feature/step-1",
+  headRefName: "feature/step-2",
   projectItems: { nodes: [] as unknown[] },
 };
 
@@ -53,6 +55,7 @@ describe("fetchReviewRequests", () => {
         statusColor: "ORANGE",
         deadline: "2026-10-24",
         pullRequests: [],
+        branches: { base: "feature/step-1", head: "feature/step-2" },
       },
     ]);
   });

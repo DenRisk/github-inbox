@@ -15,6 +15,7 @@ export function item(overrides: Partial<WorkItem> = {}): WorkItem {
     statusColor: null,
     deadline: null,
     pullRequests: [],
+    branches: null,
     ...overrides,
   };
 }

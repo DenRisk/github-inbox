@@ -9,7 +9,7 @@ query ReviewRequests($search: String!, $after: String) {
     nodes {
       __typename
       ... on PullRequest {
-        id title body url createdAt number repository { name }
+        id title body url createdAt number repository { name } baseRefName headRefName
         projectItems(first: 20) {
           nodes {
             project { number }
@@ -37,6 +37,8 @@ interface PullRequestNode {
   createdAt: string;
   number: number;
   repository: { name: string };
+  baseRefName: string;
+  headRefName: string;
   projectItems: { nodes: (BoardItem | null)[] } | null;
 }
 
@@ -72,6 +74,7 @@ function toReview(pullRequest: PullRequestNode, projectNumber: number): WorkItem
     statusColor: statusColorOf(boardItem?.status),
     deadline: boardItem?.deadline?.date ?? null,
     pullRequests: [],
+    branches: { base: pullRequest.baseRefName, head: pullRequest.headRefName },
   };
 }
 
