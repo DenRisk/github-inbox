@@ -1,4 +1,5 @@
 import { formatDate, formatDeadline, isOverdue } from "../domain/dates";
+import { mergeProgress } from "../domain/merge-progress";
 import { groupStacks, type WorkGroup } from "../domain/stacks";
 import type { WorkItem } from "../domain/work-item";
 import { todoProgress, type Todo } from "../todos/todo-store";
@@ -35,6 +36,21 @@ export function StatusLabel({ item }: { item: WorkItem }) {
   if (item.kind !== "task" || !item.status) return null;
   const color = (item.statusColor ?? "GRAY").toLowerCase();
   return <span class={`badge status status-${color}`}>{item.status}</span>;
+}
+
+export function MergeLabel({ item }: { item: WorkItem }) {
+  const progress = item.kind === "task" ? mergeProgress(item.pullRequests) : null;
+  if (!progress) return null;
+  return progress.complete ? (
+    <span class="badge merged complete">
+      <Icon name="check" small />
+      Gemergt
+    </span>
+  ) : (
+    <span class="badge merged">
+      {progress.merged}/{progress.total} gemergt
+    </span>
+  );
 }
 
 function TodoProgress({ todos }: { todos: Todo[] }) {
@@ -75,6 +91,7 @@ function WorkRow({ item, step, selected, todos, today, onSelect }: WorkRowProps)
           {item.deadline && <DeadlineLabel deadline={item.deadline} today={today} />}
           {item.closedAt && <span class="badge">geschlossen {formatDate(item.closedAt)}</span>}
           <StatusLabel item={item} />
+          <MergeLabel item={item} />
           <PullRequestCount item={item} />
           <TodoProgress todos={todos} />
         </span>

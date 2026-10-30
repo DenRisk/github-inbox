@@ -4,7 +4,7 @@ import type { TodoStore } from "../todos/todo-store";
 import { Icon } from "../ui/Icon";
 import { PullRequestList } from "./PullRequestList";
 import { TodoList } from "./TodoList";
-import { DeadlineLabel, KindTile, StatusLabel } from "./WorkList";
+import { DeadlineLabel, KindTile, MergeLabel, StatusLabel } from "./WorkList";
 
 interface WorkDetailProps {
   item: WorkItem;
@@ -26,12 +26,11 @@ export function WorkDetail({ item, today, todos, onTodosChange, onOpen }: WorkDe
             {item.repository} #{item.number} · erstellt {formatDate(item.createdAt)}
             {item.closedAt && ` · geschlossen ${formatDate(item.closedAt)}`}
           </span>
-          {(item.deadline || (item.kind === "task" && item.status)) && (
-            <p class="meta detail-meta">
-              {item.deadline && <DeadlineLabel deadline={item.deadline} today={today} />}
-              <StatusLabel item={item} />
-            </p>
-          )}
+          <p class="meta detail-meta">
+            {item.deadline && <DeadlineLabel deadline={item.deadline} today={today} />}
+            <StatusLabel item={item} />
+            <MergeLabel item={item} />
+          </p>
         </div>
         <a
           class="icon-button open-link"

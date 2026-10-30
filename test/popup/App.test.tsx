@@ -256,6 +256,20 @@ describe("App", () => {
     }
   });
 
+  it("marks a task whose pull requests are merged", async () => {
+    const merged = { title: "Merged fix", url: "https://github.com/acme/sample-repo/pull/5", number: 5, repository: "sample-repo", state: "merged" as const, closesIssue: false };
+    const open = { ...merged, title: "Open fix", url: "https://github.com/acme/sample-repo/pull/6", number: 6, state: "open" as const };
+    const done = item({ id: "I_5", kind: "task", title: "Done task", pullRequests: [merged] });
+    const halfway = item({ id: "I_6", kind: "task", title: "Halfway task", pullRequests: [merged, open] });
+    const { ports } = fakePorts({ ...snapshot, tasks: [done, halfway] });
+    render(<App ports={ports} />);
+    fireEvent.click(await screen.findByRole("tab", { name: /Aufgaben/ }));
+    expect(screen.getByText("Gemergt")).toBeTruthy();
+    expect(screen.getByText("1/2 gemergt")).toBeTruthy();
+    fireEvent.click(screen.getByText("Done task"));
+    expect(document.querySelector(".detail-meta .badge.merged")?.textContent).toBe("Gemergt");
+  });
+
   it("says when no pull request belongs to a task", async () => {
     const { ports } = fakePorts(snapshot);
     render(<App ports={ports} />);

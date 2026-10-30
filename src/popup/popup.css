@@ -324,6 +324,15 @@ ul {
   color: var(--status-purple);
 }
 
+.badge.merged {
+  color: var(--status-purple);
+}
+
+.badge.merged.complete {
+  border-color: var(--status-purple-bg);
+  background: var(--status-purple-bg);
+}
+
 .badge.progress {
   border-color: var(--positive-soft);
   background: var(--positive-soft);
