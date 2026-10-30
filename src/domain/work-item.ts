@@ -4,6 +4,13 @@ export type StatusColor = "GRAY" | "BLUE" | "GREEN" | "YELLOW" | "ORANGE" | "RED
 
 export type PullRequestState = "open" | "draft" | "merged" | "closed";
 
+export type ReviewState = "approved" | "changes-requested" | "required";
+
+export interface Branches {
+  base: string;
+  head: string;
+}
+
 export interface LinkedPullRequest {
   title: string;
   url: string;
@@ -11,6 +18,8 @@ export interface LinkedPullRequest {
   repository: string;
   state: PullRequestState;
   closesIssue: boolean;
+  branches: Branches | null;
+  review: ReviewState | null;
 }
 
 export interface WorkItem {
@@ -27,5 +36,5 @@ export interface WorkItem {
   statusColor: StatusColor | null;
   deadline: string | null;
   pullRequests: LinkedPullRequest[];
-  branches: { base: string; head: string } | null;
+  branches: Branches | null;
 }

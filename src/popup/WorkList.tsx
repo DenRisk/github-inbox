@@ -1,10 +1,11 @@
 import { formatDate, formatDeadline, isOverdue } from "../domain/dates";
 import { mergeProgress } from "../domain/merge-progress";
-import { groupStacks, type WorkGroup } from "../domain/stacks";
+import { groupStacks } from "../domain/stacks";
 import type { WorkItem } from "../domain/work-item";
 import { todoProgress, type Todo } from "../todos/todo-store";
 import { Icon } from "../ui/Icon";
 import { PullRequestCount } from "./PullRequestList";
+import { StackHeader } from "./StackHeader";
 
 interface WorkListProps {
   items: WorkItem[];
@@ -100,16 +101,6 @@ function WorkRow({ item, step, selected, todos, today, onSelect }: WorkRowProps)
   );
 }
 
-function StackHeader({ group }: { group: WorkGroup }) {
-  return (
-    <div class="stack-header">
-      <Icon name="stack" small />
-      <span>Stack mit {group.items.length} PRs</span>
-      {group.base && <span class="stack-base">auf {group.base}</span>}
-    </div>
-  );
-}
-
 export function WorkList({ items, emptyText, selectedId, todosByItem, today, onSelect }: WorkListProps) {
   if (!items.length) return <p class="empty">{emptyText}</p>;
   const rowFor = (item: WorkItem, step: number | null) => (
@@ -127,7 +118,7 @@ export function WorkList({ items, emptyText, selectedId, todosByItem, today, onS
       {groupStacks(items).map((group) =>
         group.isStack ? (
           <li key={group.items[0].id} class="stack">
-            <StackHeader group={group} />
+            <StackHeader size={group.items.length} base={group.base} />
             <ol class="stack-list">
               {group.items.map((item, index) => (
                 <li key={item.id}>{rowFor(item, index + 1)}</li>

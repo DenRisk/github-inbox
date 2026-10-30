@@ -1,11 +1,12 @@
-import { groupStacks } from "../../src/domain/stacks";
+import { groupStacks, type StackGroup } from "../../src/domain/stacks";
+import type { WorkItem } from "../../src/domain/work-item";
 import { item } from "../support/work-item";
 
 function pullRequest(id: string, base: string, head: string, repository = "sample-repo") {
   return item({ id, kind: "review", repository, branches: { base, head } });
 }
 
-function shape(groups: ReturnType<typeof groupStacks>) {
+function shape(groups: StackGroup<WorkItem>[]) {
   return groups.map((group) => group.items.map((member) => member.id));
 }
 

@@ -1,6 +1,6 @@
 import { createMemoryStore } from "../../src/storage/key-value-store";
 import { EMPTY_SNAPSHOT, loadSnapshot, SNAPSHOT_KEY } from "../../src/sync/snapshot";
-import { item } from "../support/work-item";
+import { item, linkedPullRequest } from "../support/work-item";
 
 describe("loadSnapshot", () => {
   it("starts empty without a stored snapshot", async () => {
@@ -18,10 +18,16 @@ describe("loadSnapshot", () => {
   });
 
   it("keeps the stored pull requests", async () => {
-    const pullRequests = [
-      { title: "Sample", url: "https://github.com/acme/sample-repo/pull/2", number: 2, repository: "sample-repo", state: "open" as const, closesIssue: false },
-    ];
+    const pullRequests = [linkedPullRequest({ branches: { base: "main", head: "step-1" }, review: "approved" })];
     const store = createMemoryStore({ [SNAPSHOT_KEY]: { closed: [item({ pullRequests })] } });
     expect((await loadSnapshot(store)).closed[0].pullRequests).toEqual(pullRequests);
+  });
+
+  it("gives pull requests stored before branches and reviews were fetched empty values", async () => {
+    const { branches: _, review: __, ...storedPullRequest } = linkedPullRequest();
+    const store = createMemoryStore({ [SNAPSHOT_KEY]: { tasks: [{ ...item(), pullRequests: [storedPullRequest] }] } });
+    const [pullRequest] = (await loadSnapshot(store)).tasks[0].pullRequests;
+    expect(pullRequest.branches).toBeNull();
+    expect(pullRequest.review).toBeNull();
   });
 });

@@ -2,7 +2,7 @@ import { act, fireEvent, render, screen, waitFor } from "@testing-library/preact
 import { App } from "../../src/popup/App";
 import { EMPTY_SNAPSHOT, type Snapshot } from "../../src/sync/snapshot";
 import { fakePorts } from "../support/popup-ports";
-import { item } from "../support/work-item";
+import { item, linkedPullRequest } from "../support/work-item";
 
 const HINT = "Eintrag anklicken, um Details und Todos zu sehen.";
 
@@ -230,8 +230,8 @@ describe("App", () => {
 
   it("lists the pull requests of a selected task and opens one", async () => {
     const pullRequests = [
-      { title: "Sample fix", url: "https://github.com/acme/sample-repo/pull/3", number: 3, repository: "sample-repo", state: "merged" as const, closesIssue: true },
-      { title: "Sample follow-up", url: "https://github.com/acme/other-repo/pull/4", number: 4, repository: "other-repo", state: "draft" as const, closesIssue: false },
+      linkedPullRequest({ title: "Sample fix", url: "https://github.com/acme/sample-repo/pull/3", number: 3, state: "merged", closesIssue: true }),
+      linkedPullRequest({ title: "Sample follow-up", url: "https://github.com/acme/other-repo/pull/4", number: 4, repository: "other-repo", state: "draft" }),
     ];
     const { ports } = fakePorts({ ...snapshot, tasks: [{ ...task, pullRequests }] });
     render(<App ports={ports} />);
@@ -246,6 +246,28 @@ describe("App", () => {
     expect(ports.openUrl).toHaveBeenCalledWith("https://github.com/acme/sample-repo/pull/3");
   });
 
+  it("shows the pull requests of a task as a stack in their order with their review state", async () => {
+    const step = (number: number, base: string, head: string, review: "approved" | "changes-requested" | "required") =>
+      linkedPullRequest({ title: `Step ${number}`, url: `https://github.com/acme/sample-repo/pull/${number}`, number, branches: { base, head }, review });
+    const pullRequests = [
+      step(12, "step-1", "step-2", "required"),
+      step(11, "main", "step-1", "changes-requested"),
+      step(13, "main", "solo", "approved"),
+    ];
+    const { ports } = fakePorts({ ...snapshot, tasks: [{ ...task, pullRequests }] });
+    render(<App ports={ports} />);
+    fireEvent.click(await screen.findByRole("tab", { name: /Aufgaben/ }));
+    fireEvent.click(screen.getByText("Sample task"));
+    expect(screen.getByText("Stack mit 2 PRs")).toBeTruthy();
+    const stacked = [...document.querySelectorAll(".pull-request-stack .pull-request")].map(
+      (row) => `${row.querySelector(".step-number")?.textContent} ${row.querySelector(".pull-request-number")?.textContent}`,
+    );
+    expect(stacked).toEqual(["1 #11", "2 #12"]);
+    expect(screen.getByText("Änderungen angefragt")).toBeTruthy();
+    expect(screen.getByText("Review offen")).toBeTruthy();
+    expect(screen.getByText("Freigegeben")).toBeTruthy();
+  });
+
   it("gives every section of a selected task its own heading", async () => {
     const { ports } = fakePorts(snapshot);
     render(<App ports={ports} />);
@@ -257,8 +279,8 @@ describe("App", () => {
   });
 
   it("marks a task whose pull requests are merged", async () => {
-    const merged = { title: "Merged fix", url: "https://github.com/acme/sample-repo/pull/5", number: 5, repository: "sample-repo", state: "merged" as const, closesIssue: false };
-    const open = { ...merged, title: "Open fix", url: "https://github.com/acme/sample-repo/pull/6", number: 6, state: "open" as const };
+    const merged = linkedPullRequest({ title: "Merged fix", url: "https://github.com/acme/sample-repo/pull/5", number: 5, state: "merged" });
+    const open = linkedPullRequest({ title: "Open fix", url: "https://github.com/acme/sample-repo/pull/6", number: 6 });
     const done = item({ id: "I_5", kind: "task", title: "Done task", pullRequests: [merged] });
     const halfway = item({ id: "I_6", kind: "task", title: "Halfway task", pullRequests: [merged, open] });
     const { ports } = fakePorts({ ...snapshot, tasks: [done, halfway] });

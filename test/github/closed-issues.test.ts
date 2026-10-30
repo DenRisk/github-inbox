@@ -22,6 +22,9 @@ const linkedPullRequest = {
   state: "MERGED",
   isDraft: false,
   repository: { name: "sample-repo" },
+  baseRefName: "main",
+  headRefName: "feature",
+  reviewDecision: "APPROVED",
 };
 
 function page(nodes: unknown[], endCursor: string | null = null) {
@@ -64,6 +67,8 @@ describe("fetchClosedIssues", () => {
         repository: "sample-repo",
         state: "merged",
         closesIssue: true,
+        branches: { base: "main", head: "feature" },
+        review: "approved",
       },
     ]);
   });

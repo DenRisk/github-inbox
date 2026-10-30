@@ -21,6 +21,9 @@ const linkedPullRequest = {
   state: "MERGED",
   isDraft: false,
   repository: { name: "sample-repo" },
+  baseRefName: "main",
+  headRefName: "feature",
+  reviewDecision: "APPROVED",
 };
 
 function page(nodes: unknown[], endCursor: string | null = null) {
@@ -80,6 +83,8 @@ describe("fetchProjectItems", () => {
         repository: "sample-repo",
         state: "merged",
         closesIssue: false,
+        branches: { base: "main", head: "feature" },
+        review: "approved",
       },
     ]);
     expect(requestBody(fetchFn).query).toContain("closedByPullRequestsReferences");

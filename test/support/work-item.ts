@@ -1,4 +1,4 @@
-import type { WorkItem } from "../../src/domain/work-item";
+import type { LinkedPullRequest, WorkItem } from "../../src/domain/work-item";
 
 export function item(overrides: Partial<WorkItem> = {}): WorkItem {
   return {
@@ -16,6 +16,20 @@ export function item(overrides: Partial<WorkItem> = {}): WorkItem {
     deadline: null,
     pullRequests: [],
     branches: null,
+    ...overrides,
+  };
+}
+
+export function linkedPullRequest(overrides: Partial<LinkedPullRequest> = {}): LinkedPullRequest {
+  return {
+    title: "Sample pull request",
+    url: "https://github.com/acme/sample-repo/pull/2",
+    number: 2,
+    repository: "sample-repo",
+    state: "open",
+    closesIssue: false,
+    branches: null,
+    review: null,
     ...overrides,
   };
 }

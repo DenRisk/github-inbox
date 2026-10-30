@@ -1,4 +1,4 @@
-import type { WorkItem } from "../domain/work-item";
+import type { LinkedPullRequest, WorkItem } from "../domain/work-item";
 import type { GithubErrorKind } from "../github/graphql-client";
 import type { KeyValueStore } from "../storage/key-value-store";
 
@@ -18,12 +18,23 @@ export const EMPTY_SNAPSHOT: Snapshot = { reviews: [], tasks: [], closed: [], fe
 
 type AddedLater = "pullRequests" | "statusColor" | "branches";
 
-type StoredItem = Omit<WorkItem, AddedLater> & Partial<Pick<WorkItem, AddedLater>>;
+type StoredPullRequest = Omit<LinkedPullRequest, "branches" | "review"> & Partial<Pick<LinkedPullRequest, "branches" | "review">>;
+
+type StoredItem = Omit<WorkItem, AddedLater> &
+  Partial<Pick<WorkItem, "statusColor" | "branches">> & { pullRequests?: StoredPullRequest[] };
+
+function withCurrentPullRequestFields(pullRequests: StoredPullRequest[]): LinkedPullRequest[] {
+  return pullRequests.map((pullRequest) => ({
+    ...pullRequest,
+    branches: pullRequest.branches ?? null,
+    review: pullRequest.review ?? null,
+  }));
+}
 
 function withCurrentFields(items: StoredItem[]): WorkItem[] {
   return items.map((item) => ({
     ...item,
-    pullRequests: item.pullRequests ?? [],
+    pullRequests: withCurrentPullRequestFields(item.pullRequests ?? []),
     statusColor: item.statusColor ?? null,
     branches: item.branches ?? null,
   }));

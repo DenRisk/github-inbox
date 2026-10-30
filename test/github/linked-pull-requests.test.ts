@@ -2,7 +2,12 @@ import { toLinkedPullRequests } from "../../src/github/linked-pull-requests";
 
 type State = "OPEN" | "CLOSED" | "MERGED";
 
-function pullRequest(number: number, overrides: { state?: State; isDraft?: boolean } = {}) {
+type ReviewDecision = "APPROVED" | "CHANGES_REQUESTED" | "REVIEW_REQUIRED" | null;
+
+function pullRequest(
+  number: number,
+  overrides: { state?: State; isDraft?: boolean; reviewDecision?: ReviewDecision } = {},
+) {
   return {
     __typename: "PullRequest",
     title: `Sample pull request ${number}`,
@@ -11,6 +16,9 @@ function pullRequest(number: number, overrides: { state?: State; isDraft?: boole
     state: "OPEN" as State,
     isDraft: false,
     repository: { name: "sample-repo" },
+    baseRefName: "main",
+    headRefName: `step-${number}`,
+    reviewDecision: null as ReviewDecision,
     ...overrides,
   };
 }
@@ -33,6 +41,8 @@ describe("toLinkedPullRequests", () => {
         repository: "sample-repo",
         state: "open",
         closesIssue: true,
+        branches: { base: "main", head: "step-2" },
+        review: null,
       },
       {
         title: "Sample pull request 1",
@@ -41,6 +51,8 @@ describe("toLinkedPullRequests", () => {
         repository: "sample-repo",
         state: "open",
         closesIssue: false,
+        branches: { base: "main", head: "step-1" },
+        review: null,
       },
     ]);
   });
@@ -56,6 +68,20 @@ describe("toLinkedPullRequests", () => {
       },
     });
     expect(linked.map((pr) => pr.state)).toEqual(["draft", "merged", "closed"]);
+  });
+
+  it("names the review state of a pull request", () => {
+    const linked = toLinkedPullRequests({
+      timelineItems: {
+        nodes: [
+          mentionedBy(pullRequest(1, { reviewDecision: "APPROVED" })),
+          mentionedBy(pullRequest(2, { reviewDecision: "CHANGES_REQUESTED" })),
+          mentionedBy(pullRequest(3, { reviewDecision: "REVIEW_REQUIRED" })),
+          mentionedBy(pullRequest(4)),
+        ],
+      },
+    });
+    expect(linked.map((pr) => pr.review)).toEqual(["approved", "changes-requested", "required", null]);
   });
 
   it("lists a pull request that closes and mentions the issue once", () => {

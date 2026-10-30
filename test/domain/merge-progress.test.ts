@@ -1,15 +1,9 @@
 import { mergeProgress } from "../../src/domain/merge-progress";
 import type { LinkedPullRequest, PullRequestState } from "../../src/domain/work-item";
+import { linkedPullRequest } from "../support/work-item";
 
 function pullRequests(...states: PullRequestState[]): LinkedPullRequest[] {
-  return states.map((state, index) => ({
-    title: `Sample ${index}`,
-    url: `https://github.com/acme/sample-repo/pull/${index}`,
-    number: index,
-    repository: "sample-repo",
-    state,
-    closesIssue: false,
-  }));
+  return states.map((state, number) => linkedPullRequest({ url: `https://github.com/acme/sample-repo/pull/${number}`, number, state }));
 }
 
 describe("mergeProgress", () => {
