@@ -180,6 +180,11 @@ button {
   color: var(--positive);
 }
 
+.tile.repository {
+  background: var(--status-purple-bg);
+  color: var(--status-purple);
+}
+
 .icon-button {
   display: grid;
   place-items: center;
