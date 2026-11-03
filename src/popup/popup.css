@@ -684,6 +684,9 @@ ul {
   background: var(--surface);
   color: var(--ink);
   text-decoration: none;
+  transition:
+    background 0.45s ease-out,
+    border-color 0.45s ease-out;
 }
 
 .quick-link:hover {
@@ -716,6 +719,7 @@ ul {
 .quick-link-opens {
   flex: none;
   color: var(--ink-subtle);
+  transition: color 0.45s ease-out;
 }
 
 .quick-link:hover .quick-link-opens {
