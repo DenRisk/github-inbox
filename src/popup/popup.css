@@ -123,14 +123,47 @@ ul {
   box-shadow: var(--shadow-inset);
 }
 
-.tabs {
+.tab-row {
   display: flex;
   flex: none;
+  align-items: center;
+  gap: var(--space-2);
+}
+
+.tabs {
+  display: flex;
+  flex: 1;
   gap: var(--space-1);
   padding: var(--space-1);
   border: 1px solid var(--line);
   border-radius: var(--radius-pill);
   background: var(--surface);
+}
+
+.closed-tab {
+  display: grid;
+  flex: none;
+  place-items: center;
+  width: 42px;
+  height: 42px;
+  border: 1px solid var(--line);
+  border-radius: var(--radius-pill);
+  background: var(--surface);
+  color: var(--ink-subtle);
+  transition:
+    background 0.15s ease-out,
+    color 0.15s ease-out;
+}
+
+.closed-tab:hover {
+  background: var(--surface-raised);
+  color: var(--ink);
+}
+
+.closed-tab.active {
+  border-color: var(--violet);
+  background: var(--violet);
+  color: var(--on-violet);
 }
 
 .tab {

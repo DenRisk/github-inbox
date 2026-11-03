@@ -12,7 +12,7 @@ import { WorkList } from "./WorkList";
 
 type Tab = "reviews" | "tasks" | "closed";
 
-const TAB_LABELS: Record<Tab, string> = { reviews: "Reviews", tasks: "Aufgaben", closed: "Geschlossen" };
+const WORK_TAB_LABELS: Record<Exclude<Tab, "closed">, string> = { reviews: "Reviews", tasks: "Aufgaben" };
 
 const EMPTY_TEXTS: Record<Tab, string> = {
   reviews: "Nichts offen.",
@@ -122,19 +122,32 @@ export function App({ ports }: { ports: PopupPorts }) {
       <ErrorBar snapshot={snapshot} now={now} onOpenOptions={ports.openOptions} />
       <div class="columns">
         <nav class="list-column">
-          <div class="tabs" role="tablist">
-            {(Object.keys(TAB_LABELS) as Tab[]).map((key) => (
-              <button
-                key={key}
-                type="button"
-                role="tab"
-                aria-selected={key === tab}
-                class={key === tab ? "tab active" : "tab"}
-                onClick={() => setTab(key)}
-              >
-                {TAB_LABELS[key]} <span class="count">{snapshot[key].length}</span>
-              </button>
-            ))}
+          <div class="tab-row" role="tablist">
+            <div class="tabs">
+              {(Object.keys(WORK_TAB_LABELS) as (keyof typeof WORK_TAB_LABELS)[]).map((key) => (
+                <button
+                  key={key}
+                  type="button"
+                  role="tab"
+                  aria-selected={key === tab}
+                  class={key === tab ? "tab active" : "tab"}
+                  onClick={() => setTab(key)}
+                >
+                  {WORK_TAB_LABELS[key]} <span class="count">{snapshot[key].length}</span>
+                </button>
+              ))}
+            </div>
+            <button
+              type="button"
+              role="tab"
+              aria-selected={tab === "closed"}
+              aria-label="Geschlossen"
+              title="Geschlossen"
+              class={tab === "closed" ? "closed-tab active" : "closed-tab"}
+              onClick={() => setTab("closed")}
+            >
+              <Icon name="closed" />
+            </button>
           </div>
           <WorkList
             items={items}

@@ -117,9 +117,10 @@ describe("App", () => {
   it("shows the recently closed issues with their closing day", async () => {
     const { ports } = fakePorts(snapshot);
     render(<App ports={ports} />);
-    const closedTab = await screen.findByRole("tab", { name: /Geschlossen/ });
-    expect(closedTab.textContent).toContain("1");
+    const closedTab = await screen.findByRole("tab", { name: "Geschlossen" });
+    expect(closedTab.textContent).toBe("");
     fireEvent.click(closedTab);
+    expect(closedTab.getAttribute("aria-selected")).toBe("true");
     expect(screen.getByText("Sample closed issue")).toBeTruthy();
     expect(screen.queryByText("Sample task")).toBeNull();
     expect(screen.getByText("geschlossen 17.10.2026")).toBeTruthy();
