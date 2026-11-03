@@ -665,3 +665,16 @@ ul {
   font-weight: 700;
   font-variant-numeric: tabular-nums;
 }
+
+.quick-links {
+  display: flex;
+  flex: none;
+  flex-wrap: wrap;
+  gap: var(--space-2);
+}
+
+.quick-link {
+  height: 32px;
+  padding: 0 var(--space-3);
+  font-size: 13px;
+}

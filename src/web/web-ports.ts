@@ -1,5 +1,6 @@
 import type { FetchFn } from "../github/graphql-client";
 import type { PopupPorts } from "../popup/ports";
+import { loadSettings } from "../settings/settings";
 import type { KeyValueStore } from "../storage/key-value-store";
 import { refresh } from "../sync/refresh";
 import { SerialRunner } from "../sync/serial-runner";
@@ -36,5 +37,6 @@ export function createWebPorts(deps: WebPortsDeps): PopupPorts {
     openOptions: deps.openOptions,
     openUrl: deps.openUrl,
     now: deps.now,
+    loadLinks: async () => (await loadSettings(deps.store)).links,
   };
 }

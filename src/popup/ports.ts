@@ -1,3 +1,4 @@
+import type { QuickLinks } from "../settings/settings";
 import type { Snapshot } from "../sync/snapshot";
 import type { TodoStore } from "../todos/todo-store";
 
@@ -9,4 +10,5 @@ export interface PopupPorts {
   openOptions(): void;
   openUrl(url: string): void;
   now(): Date;
+  loadLinks(): Promise<QuickLinks>;
 }

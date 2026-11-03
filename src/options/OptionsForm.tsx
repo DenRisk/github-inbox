@@ -1,7 +1,7 @@
 import { useEffect, useState } from "preact/hooks";
 import { GithubError, type FetchFn } from "../github/graphql-client";
 import { validateToken } from "../github/validate-token";
-import { DEFAULT_SETTINGS, loadSettings, saveSettings, type Settings } from "../settings/settings";
+import { DEFAULT_SETTINGS, loadSettings, saveSettings, type QuickLinks, type Settings } from "../settings/settings";
 import type { KeyValueStore } from "../storage/key-value-store";
 
 interface FormValues {
@@ -11,13 +11,26 @@ interface FormValues {
   reviewsQuery: string;
   tasksProject: string;
   tasksQuery: string;
+  reviewsBoardLink: string;
+  tasksBoardLink: string;
+  repositoryLink: string;
 }
 
 type Feedback = { tone: "ok" | "warn" | "error"; lines: string[] };
 
 const POSITIVE_INTEGER = /^[1-9]\d*$/;
 
-function boardValues(settings: Settings): Omit<FormValues, "token"> {
+const WEB_ADDRESS = /^https:\/\//i;
+
+type BoardValues = Pick<FormValues, "organization" | "reviewsProject" | "reviewsQuery" | "tasksProject" | "tasksQuery">;
+
+type LinkValues = Pick<FormValues, "reviewsBoardLink" | "tasksBoardLink" | "repositoryLink">;
+
+function linkValues(links: QuickLinks): LinkValues {
+  return { reviewsBoardLink: links.reviewsBoard, tasksBoardLink: links.tasksBoard, repositoryLink: links.repository };
+}
+
+function boardValues(settings: Settings): BoardValues {
   return {
     organization: settings.organization,
     reviewsProject: String(settings.reviews.projectNumber),
@@ -33,12 +46,21 @@ function toSettings(values: FormValues, token: string | null): Settings {
     organization: values.organization.trim(),
     reviews: { projectNumber: Number(values.reviewsProject), query: values.reviewsQuery.trim() },
     tasks: { projectNumber: Number(values.tasksProject), query: values.tasksQuery.trim() },
+    links: {
+      reviewsBoard: values.reviewsBoardLink.trim(),
+      tasksBoard: values.tasksBoardLink.trim(),
+      repository: values.repositoryLink.trim(),
+    },
   };
 }
 
 async function checkAndSave(values: FormValues, store: KeyValueStore, fetchFn: FetchFn): Promise<Feedback> {
   if (![values.reviewsProject, values.tasksProject].every((project) => POSITIVE_INTEGER.test(project.trim()))) {
     return { tone: "error", lines: ["Projektnummern müssen positive ganze Zahlen sein."] };
+  }
+  const links = [values.reviewsBoardLink, values.tasksBoardLink, values.repositoryLink].map((link) => link.trim());
+  if (!links.every((link) => !link || WEB_ADDRESS.test(link))) {
+    return { tone: "error", lines: ["Links müssen mit https:// beginnen."] };
   }
   const token = values.token.trim();
   if (!token) {
@@ -77,7 +99,9 @@ export function OptionsForm({ store, fetchFn }: { store: KeyValueStore; fetchFn:
   const [busy, setBusy] = useState(false);
 
   useEffect(() => {
-    loadSettings(store).then((settings) => setValues({ token: settings.token ?? "", ...boardValues(settings) }));
+    loadSettings(store).then((settings) =>
+      setValues({ token: settings.token ?? "", ...boardValues(settings), ...linkValues(settings.links) }),
+    );
   }, [store]);
 
   if (!values) return null;
@@ -109,6 +133,13 @@ export function OptionsForm({ store, fetchFn }: { store: KeyValueStore; fetchFn:
         <legend>Aufgaben</legend>
         <TextField label="Aufgaben: Projektnummer" value={values.tasksProject} onInput={set("tasksProject")} />
         <TextField label="Aufgaben: Filter" value={values.tasksQuery} onInput={set("tasksQuery")} />
+      </fieldset>
+      <fieldset>
+        <legend>Links</legend>
+        <TextField label="Link zum Review-Board" value={values.reviewsBoardLink} onInput={set("reviewsBoardLink")} />
+        <TextField label="Link zum Aufgaben-Board" value={values.tasksBoardLink} onInput={set("tasksBoardLink")} />
+        <TextField label="Link zum Haupt-Repo" value={values.repositoryLink} onInput={set("repositoryLink")} />
+        <p class="hint">Optional. Ausgefüllte Links erscheinen als Knöpfe in der Übersicht.</p>
       </fieldset>
       <div class="actions">
         <button type="submit" class="primary-button" disabled={busy}>

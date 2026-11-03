@@ -5,11 +5,18 @@ export interface BoardSettings {
   query: string;
 }
 
+export interface QuickLinks {
+  reviewsBoard: string;
+  tasksBoard: string;
+  repository: string;
+}
+
 export interface Settings {
   token: string | null;
   organization: string;
   reviews: BoardSettings;
   tasks: BoardSettings;
+  links: QuickLinks;
 }
 
 export const SETTINGS_KEY = "settings";
@@ -19,6 +26,7 @@ export const DEFAULT_SETTINGS: Settings = {
   organization: "sw-code",
   reviews: { projectNumber: 25, query: "is:pr is:open review-requested:@me archived:false" },
   tasks: { projectNumber: 13, query: "is:issue assignee:@me -status:Done is:open" },
+  links: { reviewsBoard: "", tasksBoard: "", repository: "" },
 };
 
 export async function loadSettings(store: KeyValueStore): Promise<Settings> {
@@ -28,6 +36,7 @@ export async function loadSettings(store: KeyValueStore): Promise<Settings> {
     ...stored,
     reviews: { ...DEFAULT_SETTINGS.reviews, ...stored.reviews },
     tasks: { ...DEFAULT_SETTINGS.tasks, ...stored.tasks },
+    links: { ...DEFAULT_SETTINGS.links, ...stored.links },
   };
 }
 

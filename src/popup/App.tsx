@@ -1,10 +1,12 @@
 import { useCallback, useEffect, useRef, useState } from "preact/hooks";
 import { formatRelative } from "../domain/dates";
+import { DEFAULT_SETTINGS, type QuickLinks as Links } from "../settings/settings";
 import type { Snapshot } from "../sync/snapshot";
 import type { Todo } from "../todos/todo-store";
 import { Icon } from "../ui/Icon";
 import { ThemeToggle } from "../ui/ThemeToggle";
 import type { PopupPorts } from "./ports";
+import { QuickLinks } from "./QuickLinks";
 import { WorkDetail } from "./WorkDetail";
 import { WorkList } from "./WorkList";
 
@@ -46,6 +48,7 @@ export function App({ ports }: { ports: PopupPorts }) {
   const [tab, setTab] = useState<Tab>("reviews");
   const [selectedByTab, setSelectedByTab] = useState<Record<Tab, string | null>>({ reviews: null, tasks: null, closed: null });
   const [todosByItem, setTodosByItem] = useState<Record<string, Todo[]>>({});
+  const [links, setLinks] = useState<Links>(DEFAULT_SETTINGS.links);
 
   const reloadTodos = useCallback(() => {
     ports.todos.all().then(setTodosByItem);
@@ -74,6 +77,7 @@ export function App({ ports }: { ports: PopupPorts }) {
       requestRefresh();
     });
     reloadTodos();
+    ports.loadLinks().then(setLinks);
     return unsubscribe;
   }, [ports, requestRefresh, reloadTodos]);
 
@@ -114,6 +118,7 @@ export function App({ ports }: { ports: PopupPorts }) {
           </button>
         </span>
       </header>
+      <QuickLinks links={links} onOpen={ports.openUrl} />
       <ErrorBar snapshot={snapshot} now={now} onOpenOptions={ports.openOptions} />
       <div class="columns">
         <nav class="list-column">

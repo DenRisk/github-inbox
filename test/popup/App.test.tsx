@@ -73,6 +73,24 @@ describe("App", () => {
     expect(button.classList.contains("spinning")).toBe(false);
   });
 
+  it("offers a button for every stored link and opens it", async () => {
+    const { ports } = fakePorts(snapshot, {
+      loadLinks: async () => ({ reviewsBoard: "https://github.com/orgs/acme/projects/25", tasksBoard: "", repository: "https://github.com/acme/sample-repo" }),
+    });
+    render(<App ports={ports} />);
+    fireEvent.click(await screen.findByRole("link", { name: "Review-Board" }));
+    expect(ports.openUrl).toHaveBeenCalledWith("https://github.com/orgs/acme/projects/25");
+    expect(screen.getByRole("link", { name: "Haupt-Repo" })).toBeTruthy();
+    expect(screen.queryByRole("link", { name: "Aufgaben-Board" })).toBeNull();
+  });
+
+  it("shows no link buttons without stored links", async () => {
+    const { ports } = fakePorts(snapshot);
+    render(<App ports={ports} />);
+    await screen.findByText("Sample review");
+    expect(screen.queryByRole("navigation", { name: "Schnellzugriff" })).toBeNull();
+  });
+
   it("opens the settings from the header", async () => {
     const { ports } = fakePorts(snapshot);
     render(<App ports={ports} />);

@@ -49,6 +49,12 @@ async function setup() {
 }
 
 describe("createWebPorts", () => {
+  it("loads the links from the settings", async () => {
+    const { ports, store } = await setup();
+    await saveSettings(store, { ...DEFAULT_SETTINGS, token: "test-token", links: { reviewsBoard: "", tasksBoard: "https://github.com/orgs/acme/projects/13", repository: "" } });
+    expect((await ports.loadLinks()).tasksBoard).toBe("https://github.com/orgs/acme/projects/13");
+  });
+
   it("refreshes from GitHub and stores the snapshot", async () => {
     const { store, ports } = await setup();
     const snapshot = await ports.requestRefresh();

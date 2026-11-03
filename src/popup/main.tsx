@@ -1,4 +1,5 @@
 import { render } from "preact";
+import { loadSettings } from "../settings/settings";
 import { createChromeStore } from "../storage/key-value-store";
 import { loadSnapshot, SNAPSHOT_KEY, type Snapshot } from "../sync/snapshot";
 import { TodoStore } from "../todos/todo-store";
@@ -25,6 +26,7 @@ const chromePorts: PopupPorts = {
   openOptions: () => void chrome.runtime.openOptionsPage(),
   openUrl: (url) => void chrome.tabs.create({ url }),
   now: () => new Date(),
+  loadLinks: async () => (await loadSettings(store)).links,
 };
 
 render(<App ports={chromePorts} />, document.getElementById("app")!);

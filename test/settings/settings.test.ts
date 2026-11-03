@@ -16,6 +16,16 @@ describe("settings", () => {
     expect(DEFAULT_SETTINGS.tasks).toEqual({ projectNumber: 13, query: "is:issue assignee:@me -status:Done is:open" });
     expect(DEFAULT_SETTINGS.organization).toBe("sw-code");
     expect(DEFAULT_SETTINGS.token).toBeNull();
+    expect(DEFAULT_SETTINGS.links).toEqual({ reviewsBoard: "", tasksBoard: "", repository: "" });
+  });
+
+  it("keeps the stored links and fills the missing ones", async () => {
+    const store = createMemoryStore({ settings: { links: { repository: "https://github.com/acme/sample-repo" } } });
+    expect((await loadSettings(store)).links).toEqual({
+      reviewsBoard: "",
+      tasksBoard: "",
+      repository: "https://github.com/acme/sample-repo",
+    });
   });
 
   it("loads what was saved", async () => {

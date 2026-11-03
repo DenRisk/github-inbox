@@ -21,6 +21,7 @@ export function fakePorts(snapshot: Snapshot = EMPTY_SNAPSHOT, overrides: Partia
     openOptions: vi.fn(),
     openUrl: vi.fn(),
     now: () => new Date("2026-10-19T10:00:00.000Z"),
+    loadLinks: async () => ({ reviewsBoard: "", tasksBoard: "", repository: "" }),
     ...overrides,
   };
   return {

@@ -40,6 +40,9 @@ describe("OptionsForm", () => {
     expect(field("Reviews: GitHub-Suche").value).toBe(REVIEW_SEARCH);
     expect(field("Aufgaben: Projektnummer").value).toBe("13");
     expect(field("Aufgaben: Filter").value).toBe(TASK_FILTER);
+    expect(field("Link zum Review-Board").value).toBe("");
+    expect(field("Link zum Aufgaben-Board").value).toBe("");
+    expect(field("Link zum Haupt-Repo").value).toBe("");
   });
 
   it("keeps the token in a password field", async () => {
@@ -64,6 +67,30 @@ describe("OptionsForm", () => {
     submit();
     await screen.findByText("Angemeldet als octocat.");
     expect((await loadSettings(store)).tasks).toEqual({ projectNumber: 7, query: "is:open" });
+  });
+
+  it("saves the links without surrounding spaces", async () => {
+    const { store } = await renderForm();
+    change("GitHub-Token", "test-token");
+    change("Link zum Review-Board", " https://github.com/orgs/acme/projects/25 ");
+    change("Link zum Haupt-Repo", "https://github.com/acme/sample-repo");
+    submit();
+    await screen.findByText("Angemeldet als octocat.");
+    expect((await loadSettings(store)).links).toEqual({
+      reviewsBoard: "https://github.com/orgs/acme/projects/25",
+      tasksBoard: "",
+      repository: "https://github.com/acme/sample-repo",
+    });
+  });
+
+  it("rejects a link that is not a web address", async () => {
+    const { store, fetchFn } = await renderForm();
+    change("GitHub-Token", "test-token");
+    change("Link zum Aufgaben-Board", "github.com/orgs/acme/projects/13");
+    submit();
+    expect(await screen.findByText("Links müssen mit https:// beginnen.")).toBeTruthy();
+    expect(fetchFn).not.toHaveBeenCalled();
+    expect(await loadSettings(store)).toEqual(DEFAULT_SETTINGS);
   });
 
   it("warns about missing scopes but still saves", async () => {
