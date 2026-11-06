@@ -1,3 +1,4 @@
+import { OrderStore } from "../../src/ordering/order-store";
 import type { PopupPorts } from "../../src/popup/ports";
 import { createMemoryStore } from "../../src/storage/key-value-store";
 import { EMPTY_SNAPSHOT, type Snapshot } from "../../src/sync/snapshot";
@@ -18,6 +19,7 @@ export function fakePorts(snapshot: Snapshot = EMPTY_SNAPSHOT, overrides: Partia
       return () => listeners.delete(listener);
     },
     todos: new TodoStore(createMemoryStore(), sequentialIds()),
+    order: new OrderStore(createMemoryStore()),
     openOptions: vi.fn(),
     openUrl: vi.fn(),
     now: () => new Date("2026-10-19T10:00:00.000Z"),

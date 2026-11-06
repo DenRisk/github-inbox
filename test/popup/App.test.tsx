@@ -305,7 +305,7 @@ describe("App", () => {
     const { ports } = fakePorts({ ...snapshot, tasks: [done, halfway] });
     render(<App ports={ports} />);
     fireEvent.click(await screen.findByRole("tab", { name: /Aufgaben/ }));
-    expect(screen.getByText("Gemergt")).toBeTruthy();
+    expect(document.querySelector(".work-list .badge.merged.complete")?.textContent).toBe("Gemergt");
     expect(screen.getByText("1/2 gemergt")).toBeTruthy();
     fireEvent.click(screen.getByText("Done task"));
     expect(document.querySelector(".detail-meta .badge.merged")?.textContent).toBe("Gemergt");
@@ -335,8 +335,8 @@ describe("App", () => {
     expect(screen.getByText("auf main")).toBeTruthy();
     const titles = [...document.querySelectorAll(".stack .work-title")].map((title) => title.textContent);
     expect(titles).toEqual(["Lower step", "Upper step"]);
-    const firstEntry = document.querySelector(".work-list > li");
-    expect(firstEntry?.classList.contains("stack")).toBe(false);
+    const firstEntry = document.querySelector(".work-group > li");
+    expect(firstEntry?.querySelector(".stack")).toBeNull();
     expect(firstEntry?.textContent).toContain("Sample review");
     fireEvent.click(screen.getByText("Upper step"));
     expect(screen.getByText("Upper description")).toBeTruthy();

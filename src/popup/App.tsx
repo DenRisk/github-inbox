@@ -1,5 +1,6 @@
 import { useCallback, useEffect, useRef, useState } from "preact/hooks";
 import { formatRelative } from "../domain/dates";
+import type { OrderByList } from "../ordering/order-store";
 import { DEFAULT_SETTINGS, type QuickLinks as Links } from "../settings/settings";
 import type { Snapshot } from "../sync/snapshot";
 import type { Todo } from "../todos/todo-store";
@@ -49,6 +50,7 @@ export function App({ ports }: { ports: PopupPorts }) {
   const [selectedByTab, setSelectedByTab] = useState<Record<Tab, string | null>>({ reviews: null, tasks: null, closed: null });
   const [todosByItem, setTodosByItem] = useState<Record<string, Todo[]>>({});
   const [links, setLinks] = useState<Links>(DEFAULT_SETTINGS.links);
+  const [orderByList, setOrderByList] = useState<OrderByList>({});
 
   const reloadTodos = useCallback(() => {
     ports.todos.all().then(setTodosByItem);
@@ -78,6 +80,7 @@ export function App({ ports }: { ports: PopupPorts }) {
     });
     reloadTodos();
     ports.loadLinks().then(setLinks);
+    ports.order.all().then(setOrderByList);
     return unsubscribe;
   }, [ports, requestRefresh, reloadTodos]);
 
@@ -88,6 +91,15 @@ export function App({ ports }: { ports: PopupPorts }) {
   const selectedId = selectedByTab[tab];
   const selected = items.find((item) => item.id === selectedId) ?? null;
   const select = (id: string) => setSelectedByTab({ ...selectedByTab, [tab]: id });
+  const reorder = (keys: string[]) => {
+    setOrderByList({ ...orderByList, [tab]: keys });
+    void ports.order.save(tab, keys);
+  };
+  const resetOrder = () => {
+    const { [tab]: _forgotten, ...rest } = orderByList;
+    setOrderByList(rest);
+    void ports.order.reset(tab);
+  };
 
   return (
     <div class="popup screen">
@@ -156,6 +168,9 @@ export function App({ ports }: { ports: PopupPorts }) {
             todosByItem={todosByItem}
             today={now}
             onSelect={select}
+            order={orderByList[tab] ?? []}
+            onReorder={reorder}
+            onResetOrder={resetOrder}
           />
         </nav>
         <main class="detail-column">

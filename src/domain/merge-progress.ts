@@ -1,4 +1,4 @@
-import type { LinkedPullRequest } from "./work-item";
+import type { LinkedPullRequest, WorkItem } from "./work-item";
 
 export interface MergeProgress {
   merged: number;
@@ -11,4 +11,8 @@ export function mergeProgress(pullRequests: LinkedPullRequest[]): MergeProgress 
   const merged = stillCounting.filter((pullRequest) => pullRequest.state === "merged").length;
   if (!merged) return null;
   return { merged, total: stillCounting.length, complete: merged === stillCounting.length };
+}
+
+export function isFullyMerged(item: WorkItem): boolean {
+  return item.kind === "task" && (mergeProgress(item.pullRequests)?.complete ?? false);
 }

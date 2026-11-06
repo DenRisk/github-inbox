@@ -1,4 +1,5 @@
 import { render } from "preact";
+import { OrderStore } from "../ordering/order-store";
 import { loadSettings } from "../settings/settings";
 import { createChromeStore } from "../storage/key-value-store";
 import { loadSnapshot, SNAPSHOT_KEY, type Snapshot } from "../sync/snapshot";
@@ -23,6 +24,7 @@ const chromePorts: PopupPorts = {
     return () => chrome.storage.onChanged.removeListener(onChanged);
   },
   todos: new TodoStore(store),
+  order: new OrderStore(store),
   openOptions: () => void chrome.runtime.openOptionsPage(),
   openUrl: (url) => void chrome.tabs.create({ url }),
   now: () => new Date(),

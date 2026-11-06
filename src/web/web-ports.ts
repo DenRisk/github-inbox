@@ -1,4 +1,5 @@
 import type { FetchFn } from "../github/graphql-client";
+import { OrderStore } from "../ordering/order-store";
 import type { PopupPorts } from "../popup/ports";
 import { loadSettings } from "../settings/settings";
 import type { KeyValueStore } from "../storage/key-value-store";
@@ -34,6 +35,7 @@ export function createWebPorts(deps: WebPortsDeps): PopupPorts {
       return () => listeners.delete(listener);
     },
     todos: new TodoStore(deps.store),
+    order: new OrderStore(deps.store),
     openOptions: deps.openOptions,
     openUrl: deps.openUrl,
     now: deps.now,
