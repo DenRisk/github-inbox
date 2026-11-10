@@ -20,6 +20,7 @@ interface WorkListProps {
   order: string[];
   onReorder: (keys: string[]) => void;
   onResetOrder: () => void;
+  mergeMarks: ReadonlySet<string>;
 }
 
 type Entry = StackGroup<WorkItem>;
@@ -39,9 +40,9 @@ const entryKey = (entry: Entry) => entry.items[0].id;
 
 const keysOf = (section: Section) => section.entries.map(entryKey);
 
-function sectionsOf(items: WorkItem[], order: string[]): Section[] {
+function sectionsOf(items: WorkItem[], order: string[], mergeMarks: ReadonlySet<string>): Section[] {
   const entries = arrangeByOrder(singlesBeforeStacks(groupStacks(items)), entryKey, order);
-  const isMerged = (entry: Entry) => entry.items.every(isFullyMerged);
+  const isMerged = (entry: Entry) => entry.items.every((item) => mergeMarks.has(item.id) || isFullyMerged(item));
   if (!entries.some(isMerged)) return [{ key: "all", title: null, entries }];
   const sections: Section[] = [
     { key: "open", title: "In Arbeit", entries: entries.filter((entry) => !isMerged(entry)) },
@@ -82,15 +83,19 @@ export function StatusLabel({ item }: { item: WorkItem }) {
   return <span class={`badge status status-${color}`}>{item.status}</span>;
 }
 
-export function MergeLabel({ item }: { item: WorkItem }) {
-  const progress = item.kind === "task" ? mergeProgress(item.pullRequests) : null;
+export function MergeLabel({ item, marked }: { item: WorkItem; marked: boolean }) {
+  if (item.kind !== "task") return null;
+  const progress = mergeProgress(item.pullRequests);
+  if (marked || progress?.complete) {
+    return (
+      <span class="badge merged complete" title={progress?.complete ? undefined : "von dir markiert"}>
+        <Icon name="check" small />
+        Gemergt
+      </span>
+    );
+  }
   if (!progress) return null;
-  return progress.complete ? (
-    <span class="badge merged complete">
-      <Icon name="check" small />
-      Gemergt
-    </span>
-  ) : (
+  return (
     <span class="badge merged">
       {progress.merged}/{progress.total} gemergt
     </span>
@@ -113,10 +118,11 @@ interface WorkRowProps {
   selected: boolean;
   todos: Todo[];
   today: Date;
+  marked: boolean;
   onSelect: (id: string) => void;
 }
 
-function WorkRow({ item, step, selected, todos, today, onSelect }: WorkRowProps) {
+function WorkRow({ item, step, selected, todos, today, marked, onSelect }: WorkRowProps) {
   return (
     <button type="button" class={selected ? "work-row selected" : "work-row"} onClick={() => onSelect(item.id)}>
       {step === null ? (
@@ -135,7 +141,7 @@ function WorkRow({ item, step, selected, todos, today, onSelect }: WorkRowProps)
           {item.deadline && <DeadlineLabel deadline={item.deadline} today={today} />}
           {item.closedAt && <span class="badge">geschlossen {formatDate(item.closedAt)}</span>}
           <StatusLabel item={item} />
-          <MergeLabel item={item} />
+          <MergeLabel item={item} marked={marked} />
           <PullRequestCount item={item} />
           <TodoProgress todos={todos} />
         </span>
@@ -213,14 +219,14 @@ function WorkEntry({ entry, dragging, drop, onDragStart, onDragOver, onDrop, onD
 }
 
 export function WorkList(props: WorkListProps) {
-  const { items, emptyText, selectedId, todosByItem, today, onSelect, order, onReorder, onResetOrder } = props;
+  const { items, emptyText, selectedId, todosByItem, today, onSelect, order, onReorder, onResetOrder, mergeMarks } = props;
   const [mergedFolded, setMergedFolded] = useState(false);
   const [dragged, setDragged] = useState<{ key: string; section: Section["key"] } | null>(null);
   const [dropTarget, setDropTarget] = useState<DropTarget | null>(null);
 
   if (!items.length) return <p class="empty">{emptyText}</p>;
 
-  const sections = sectionsOf(items, order);
+  const sections = sectionsOf(items, order, mergeMarks);
   const reorder = (section: Section, moving: string, target: string, after: boolean) => {
     const keys = moveKey(keysOf(section), moving, target, after);
     onReorder(sections.flatMap((each) => (each === section ? keys : keysOf(each))));
@@ -236,6 +242,7 @@ export function WorkList(props: WorkListProps) {
       selected={item.id === selectedId}
       todos={todosByItem[item.id] ?? []}
       today={today}
+      marked={mergeMarks.has(item.id)}
       onSelect={onSelect}
     />
   );

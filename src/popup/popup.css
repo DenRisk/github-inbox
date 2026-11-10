@@ -787,6 +787,13 @@ ul {
   color: var(--ink-muted);
 }
 
+.merge-mark {
+  align-self: flex-start;
+  height: 32px;
+  padding: 0 var(--space-3);
+  font-size: 13px;
+}
+
 .stack {
   display: flex;
   flex-direction: column;

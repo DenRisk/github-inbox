@@ -1,3 +1,4 @@
+import type { ComponentChildren } from "preact";
 import { groupStacks, singlesBeforeStacks } from "../domain/stacks";
 import type { LinkedPullRequest, PullRequestState, ReviewState, WorkItem } from "../domain/work-item";
 import { Icon } from "../ui/Icon";
@@ -60,7 +61,13 @@ function PullRequestRow({ pullRequest, item, step, onOpen }: PullRequestRowProps
   );
 }
 
-export function PullRequestList({ item, onOpen }: { item: WorkItem; onOpen: (url: string) => void }) {
+interface PullRequestListProps {
+  item: WorkItem;
+  onOpen: (url: string) => void;
+  children?: ComponentChildren;
+}
+
+export function PullRequestList({ item, onOpen, children }: PullRequestListProps) {
   return (
     <section class="detail-section">
       <h3 class="section-title">
@@ -91,6 +98,7 @@ export function PullRequestList({ item, onOpen }: { item: WorkItem; onOpen: (url
       ) : (
         <p class="pull-requests-empty">Kein Pull Request verknüpft oder erwähnt.</p>
       )}
+      {children}
     </section>
   );
 }

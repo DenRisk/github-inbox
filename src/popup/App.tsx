@@ -51,6 +51,7 @@ export function App({ ports }: { ports: PopupPorts }) {
   const [todosByItem, setTodosByItem] = useState<Record<string, Todo[]>>({});
   const [links, setLinks] = useState<Links>(DEFAULT_SETTINGS.links);
   const [orderByList, setOrderByList] = useState<OrderByList>({});
+  const [mergeMarks, setMergeMarks] = useState<ReadonlySet<string>>(new Set());
 
   const reloadTodos = useCallback(() => {
     ports.todos.all().then(setTodosByItem);
@@ -81,6 +82,7 @@ export function App({ ports }: { ports: PopupPorts }) {
     reloadTodos();
     ports.loadLinks().then(setLinks);
     ports.order.all().then(setOrderByList);
+    ports.mergeMarks.all().then((marks) => setMergeMarks(new Set(marks)));
     return unsubscribe;
   }, [ports, requestRefresh, reloadTodos]);
 
@@ -99,6 +101,13 @@ export function App({ ports }: { ports: PopupPorts }) {
     const { [tab]: _forgotten, ...rest } = orderByList;
     setOrderByList(rest);
     void ports.order.reset(tab);
+  };
+  const markMerged = (itemId: string, marked: boolean) => {
+    const next = new Set(mergeMarks);
+    if (marked) next.add(itemId);
+    else next.delete(itemId);
+    setMergeMarks(next);
+    void ports.mergeMarks.set(itemId, marked);
   };
 
   return (
@@ -171,6 +180,7 @@ export function App({ ports }: { ports: PopupPorts }) {
             order={orderByList[tab] ?? []}
             onReorder={reorder}
             onResetOrder={resetOrder}
+            mergeMarks={mergeMarks}
           />
         </nav>
         <main class="detail-column">
@@ -182,6 +192,8 @@ export function App({ ports }: { ports: PopupPorts }) {
               todos={ports.todos}
               onTodosChange={reloadTodos}
               onOpen={ports.openUrl}
+              markedMerged={mergeMarks.has(selected.id)}
+              onMarkMerged={(marked) => markMerged(selected.id, marked)}
             />
           ) : (
             <div class="hint">

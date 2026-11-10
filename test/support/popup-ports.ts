@@ -1,3 +1,4 @@
+import { MergeMarkStore } from "../../src/marks/merge-mark-store";
 import { OrderStore } from "../../src/ordering/order-store";
 import type { PopupPorts } from "../../src/popup/ports";
 import { createMemoryStore } from "../../src/storage/key-value-store";
@@ -20,6 +21,7 @@ export function fakePorts(snapshot: Snapshot = EMPTY_SNAPSHOT, overrides: Partia
     },
     todos: new TodoStore(createMemoryStore(), sequentialIds()),
     order: new OrderStore(createMemoryStore()),
+    mergeMarks: new MergeMarkStore(createMemoryStore()),
     openOptions: vi.fn(),
     openUrl: vi.fn(),
     now: () => new Date("2026-10-19T10:00:00.000Z"),

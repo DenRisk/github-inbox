@@ -1,4 +1,5 @@
 import { formatDate } from "../domain/dates";
+import { isFullyMerged } from "../domain/merge-progress";
 import type { WorkItem } from "../domain/work-item";
 import type { TodoStore } from "../todos/todo-store";
 import { Icon } from "../ui/Icon";
@@ -12,9 +13,11 @@ interface WorkDetailProps {
   todos: TodoStore;
   onTodosChange: () => void;
   onOpen: (url: string) => void;
+  markedMerged: boolean;
+  onMarkMerged: (marked: boolean) => void;
 }
 
-export function WorkDetail({ item, today, todos, onTodosChange, onOpen }: WorkDetailProps) {
+export function WorkDetail({ item, today, todos, onTodosChange, onOpen, markedMerged, onMarkMerged }: WorkDetailProps) {
   const description = item.body.trim();
   return (
     <article class="detail">
@@ -29,7 +32,7 @@ export function WorkDetail({ item, today, todos, onTodosChange, onOpen }: WorkDe
           <p class="meta detail-meta">
             {item.deadline && <DeadlineLabel deadline={item.deadline} today={today} />}
             <StatusLabel item={item} />
-            <MergeLabel item={item} />
+            <MergeLabel item={item} marked={markedMerged} />
           </p>
         </div>
         <a
@@ -45,7 +48,16 @@ export function WorkDetail({ item, today, todos, onTodosChange, onOpen }: WorkDe
           <Icon name="external" />
         </a>
       </header>
-      {item.kind !== "review" && <PullRequestList item={item} onOpen={onOpen} />}
+      {item.kind !== "review" && (
+        <PullRequestList item={item} onOpen={onOpen}>
+          {item.kind === "task" && !isFullyMerged(item) && (
+            <button type="button" class="secondary-button merge-mark" onClick={() => onMarkMerged(!markedMerged)}>
+              <Icon name={markedMerged ? "remove" : "check"} small />
+              {markedMerged ? "Markierung entfernen" : "Als gemergt markieren"}
+            </button>
+          )}
+        </PullRequestList>
+      )}
       <section class="detail-section">
         <h3 class="section-title">
           <Icon name="description" />

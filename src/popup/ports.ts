@@ -1,3 +1,4 @@
+import type { MergeMarkStore } from "../marks/merge-mark-store";
 import type { OrderStore } from "../ordering/order-store";
 import type { QuickLinks } from "../settings/settings";
 import type { Snapshot } from "../sync/snapshot";
@@ -9,6 +10,7 @@ export interface PopupPorts {
   onSnapshotChange(listener: (snapshot: Snapshot) => void): () => void;
   todos: TodoStore;
   order: OrderStore;
+  mergeMarks: MergeMarkStore;
   openOptions(): void;
   openUrl(url: string): void;
   now(): Date;

@@ -1,4 +1,5 @@
 import type { FetchFn } from "../github/graphql-client";
+import { MergeMarkStore } from "../marks/merge-mark-store";
 import { OrderStore } from "../ordering/order-store";
 import type { PopupPorts } from "../popup/ports";
 import { loadSettings } from "../settings/settings";
@@ -36,6 +37,7 @@ export function createWebPorts(deps: WebPortsDeps): PopupPorts {
     },
     todos: new TodoStore(deps.store),
     order: new OrderStore(deps.store),
+    mergeMarks: new MergeMarkStore(deps.store),
     openOptions: deps.openOptions,
     openUrl: deps.openUrl,
     now: deps.now,
