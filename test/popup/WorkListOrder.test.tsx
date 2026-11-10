@@ -61,7 +61,7 @@ describe("WorkList order", () => {
     expect(titlesUnder("Sprint Backlog")).toEqual(["Planned task"]);
     expect(titlesUnder("Ohne Status")).toEqual(["Loose task"]);
     expect(document.querySelector(".work-section-header .status-dot.status-yellow")).toBeTruthy();
-    expect(document.querySelector(".work-list .badge.status")).toBeNull();
+    expect(document.querySelector(".work-list .badge.status.status-yellow")?.textContent).toBe("Sprint Backlog");
   });
 
   it("folds any status group away", async () => {

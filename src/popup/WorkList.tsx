@@ -169,6 +169,7 @@ function WorkRow({ item, step, selected, todos, today, marked, onSelect }: WorkR
         <span class="meta">
           {item.deadline && <DeadlineLabel deadline={item.deadline} today={today} />}
           {item.closedAt && <span class="badge">geschlossen {formatDate(item.closedAt)}</span>}
+          <StatusLabel item={item} />
           <MergeLabel item={item} marked={marked} />
           <PullRequestCount item={item} />
           <TodoProgress todos={todos} />

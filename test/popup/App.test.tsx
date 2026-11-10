@@ -111,7 +111,7 @@ describe("App", () => {
     fireEvent.click(await screen.findByRole("tab", { name: /Aufgaben/ }));
     expect(screen.getByText("Sample task")).toBeTruthy();
     expect(screen.queryByText("Sample review")).toBeNull();
-    expect(screen.getByText("In Review")).toBeTruthy();
+    expect(document.querySelector(".work-list .badge.status")?.textContent).toBe("In Review");
   });
 
   it("shows the recently closed issues with their closing day", async () => {
@@ -168,7 +168,7 @@ describe("App", () => {
     render(<App ports={ports} />);
     fireEvent.click(await screen.findByRole("tab", { name: /Aufgaben/ }));
     fireEvent.click(screen.getByText("Sample task"));
-    expect(screen.getAllByText("In Review")).toHaveLength(2);
+    expect(document.querySelector(".detail-meta .badge.status")?.textContent).toBe("In Review");
   });
 
   it("colors the status like the board does", async () => {
