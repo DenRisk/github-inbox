@@ -238,12 +238,51 @@ ul {
   text-align: left;
 }
 
-.work-section-header.foldable {
+.work-section-header {
   cursor: pointer;
 }
 
-.work-section-header.foldable:hover {
+.work-section-header:hover {
   color: var(--ink);
+}
+
+.status-dot {
+  flex: none;
+  width: 8px;
+  height: 8px;
+  border-radius: var(--radius-pill);
+}
+
+.status-dot.status-gray {
+  background: var(--status-gray);
+}
+
+.status-dot.status-blue {
+  background: var(--status-blue);
+}
+
+.status-dot.status-green {
+  background: var(--status-green);
+}
+
+.status-dot.status-yellow {
+  background: var(--status-yellow);
+}
+
+.status-dot.status-orange {
+  background: var(--status-orange);
+}
+
+.status-dot.status-red {
+  background: var(--status-red);
+}
+
+.status-dot.status-pink {
+  background: var(--status-pink);
+}
+
+.status-dot.status-purple {
+  background: var(--status-purple);
 }
 
 .work-section-rule {

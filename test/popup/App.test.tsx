@@ -175,8 +175,14 @@ describe("App", () => {
     const { ports } = fakePorts({ ...snapshot, tasks: [task, item({ id: "I_3", title: "Unknown color", status: "Todo" })] });
     render(<App ports={ports} />);
     fireEvent.click(await screen.findByRole("tab", { name: /Aufgaben/ }));
-    expect(screen.getByText("In Review").classList.contains("status-pink")).toBe(true);
-    expect(screen.getByText("Todo").classList.contains("status-gray")).toBe(true);
+    const dotOf = (title: string) =>
+      [...document.querySelectorAll(".work-section-header")]
+        .find((header) => header.querySelector(".work-section-title")?.textContent === title)
+        ?.querySelector(".status-dot");
+    expect(dotOf("In Review")?.classList.contains("status-pink")).toBe(true);
+    expect(dotOf("Todo")?.classList.contains("status-gray")).toBe(true);
+    fireEvent.click(screen.getByText("Sample task"));
+    expect(document.querySelector(".detail-meta .badge.status")?.classList.contains("status-pink")).toBe(true);
   });
 
   it("hides the board status of a selected review", async () => {

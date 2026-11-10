@@ -3,6 +3,7 @@ import { App } from "../../src/popup/App";
 import type { Snapshot } from "../../src/sync/snapshot";
 import { fakePorts } from "../support/popup-ports";
 import { item, linkedPullRequest } from "../support/work-item";
+import { sectionTitles, titlesUnder } from "../support/work-list";
 
 const first = item({ id: "PR_1", kind: "review", title: "First review" });
 const second = item({ id: "PR_2", kind: "review", title: "Second review" });
@@ -11,8 +12,8 @@ const third = item({ id: "PR_3", kind: "review", title: "Third review" });
 const merged = linkedPullRequest({ url: "https://github.com/acme/sample-repo/pull/7", number: 7, state: "merged" });
 const open = linkedPullRequest({ url: "https://github.com/acme/sample-repo/pull/8", number: 8 });
 const doneTask = item({ id: "I_1", kind: "task", title: "Done task", pullRequests: [merged] });
-const runningTask = item({ id: "I_2", kind: "task", title: "Running task", pullRequests: [merged, open] });
-const freshTask = item({ id: "I_3", kind: "task", title: "Fresh task" });
+const runningTask = item({ id: "I_2", kind: "task", title: "Running task", status: "In Review", statusColor: "PINK", pullRequests: [merged, open] });
+const freshTask = item({ id: "I_3", kind: "task", title: "Fresh task", status: "In Progress", statusColor: "BLUE" });
 
 const snapshot: Snapshot = {
   reviews: [first, second, third],
@@ -39,8 +40,37 @@ describe("WorkList order", () => {
     const { ports } = fakePorts(snapshot);
     render(<App ports={ports} />);
     await openTasks();
-    expect([...document.querySelectorAll(".work-section-title")].map((title) => title.textContent)).toEqual(["In Arbeit", "Gemergt"]);
-    expect(shownTitles()).toEqual(["Running task", "Fresh task", "Done task"]);
+    expect(sectionTitles()).toEqual(["In Progress", "In Review", "Gemergt"]);
+    expect(titlesUnder("Gemergt")).toEqual(["Done task"]);
+  });
+
+  it("groups the tasks by their board status in the order work moves through the board", async () => {
+    const tasks = [
+      item({ id: "I_10", title: "Planned task", status: "Sprint Backlog", statusColor: "YELLOW" }),
+      item({ id: "I_11", title: "Loose task" }),
+      item({ id: "I_12", title: "Waiting task", status: "Blocked", statusColor: "RED" }),
+      item({ id: "I_13", title: "Someday task", status: "Todo", statusColor: "GRAY" }),
+      item({ id: "I_14", title: "Reviewed task", status: "In Review", statusColor: "PINK" }),
+      item({ id: "I_15", title: "Busy task", status: "In Progress", statusColor: "BLUE" }),
+      doneTask,
+    ];
+    const { ports } = fakePorts({ ...snapshot, tasks });
+    render(<App ports={ports} />);
+    await openTasks();
+    expect(sectionTitles()).toEqual(["In Progress", "In Review", "Sprint Backlog", "Todo", "Blocked", "Ohne Status", "Gemergt"]);
+    expect(titlesUnder("Sprint Backlog")).toEqual(["Planned task"]);
+    expect(titlesUnder("Ohne Status")).toEqual(["Loose task"]);
+    expect(document.querySelector(".work-section-header .status-dot.status-yellow")).toBeTruthy();
+    expect(document.querySelector(".work-list .badge.status")).toBeNull();
+  });
+
+  it("folds any status group away", async () => {
+    const { ports } = fakePorts(snapshot);
+    render(<App ports={ports} />);
+    await openTasks();
+    fireEvent.click(screen.getByRole("button", { name: /^In Progress/ }));
+    expect(screen.queryByText("Fresh task")).toBeNull();
+    expect(screen.getByText("Running task")).toBeTruthy();
   });
 
   it("shows no group headings while nothing is merged", async () => {
@@ -90,11 +120,11 @@ describe("WorkList order", () => {
     const { ports } = fakePorts(snapshot);
     render(<App ports={ports} />);
     await openTasks();
-    fireEvent.dragStart(entryOf("Running task"));
+    fireEvent.dragStart(entryOf("Fresh task"));
     fireEvent.dragOver(entryOf("Done task"));
     expect(entryOf("Done task").classList.contains("drop-before")).toBe(false);
     fireEvent.drop(entryOf("Done task"));
-    expect(shownTitles()).toEqual(["Running task", "Fresh task", "Done task"]);
+    expect(shownTitles()).toEqual(["Fresh task", "Running task", "Done task"]);
   });
 
   it("shows new entries on top of an arranged list", async () => {

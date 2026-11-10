@@ -3,6 +3,7 @@ import { App } from "../../src/popup/App";
 import type { Snapshot } from "../../src/sync/snapshot";
 import { fakePorts } from "../support/popup-ports";
 import { item, linkedPullRequest } from "../support/work-item";
+import { titlesUnder } from "../support/work-list";
 
 const merged = linkedPullRequest({ url: "https://github.com/acme/sample-repo/pull/7", number: 7, state: "merged" });
 const open = linkedPullRequest({ url: "https://github.com/acme/sample-repo/pull/8", number: 8 });
@@ -22,10 +23,6 @@ const snapshot: Snapshot = {
 const MARK = "Als gemergt markieren";
 const UNMARK = "Markierung entfernen";
 
-function titlesIn(section: "open" | "merged"): string[] {
-  return [...document.querySelectorAll(`.work-section.${section} .work-title`)].map((title) => title.textContent ?? "");
-}
-
 async function openTask(ports: ReturnType<typeof fakePorts>["ports"], title: string) {
   render(<App ports={ports} />);
   fireEvent.click(await screen.findByRole("tab", { name: /Aufgaben/ }));
@@ -40,7 +37,7 @@ describe("marking a task as merged by hand", () => {
     const badge = document.querySelector(".detail-meta .badge.merged.complete");
     expect(badge?.textContent).toBe("Gemergt");
     expect(badge?.getAttribute("title")).toBe("von dir markiert");
-    expect(titlesIn("merged")).toEqual(["Customer task", "Done task"]);
+    expect(titlesUnder("Gemergt")).toEqual(["Customer task", "Done task"]);
     await waitFor(async () => expect(await ports.mergeMarks.all()).toEqual(["I_1"]));
   });
 
@@ -48,7 +45,7 @@ describe("marking a task as merged by hand", () => {
     const { ports } = fakePorts(snapshot);
     await openTask(ports, "Running task");
     fireEvent.click(screen.getByRole("button", { name: MARK }));
-    expect(titlesIn("merged")).toEqual(["Running task", "Done task"]);
+    expect(titlesUnder("Gemergt")).toEqual(["Running task", "Done task"]);
     expect(screen.queryByText("1/2 gemergt")).toBeNull();
   });
 
@@ -56,9 +53,9 @@ describe("marking a task as merged by hand", () => {
     const { ports } = fakePorts(snapshot);
     await ports.mergeMarks.set("I_1", true);
     await openTask(ports, "Customer task");
-    await waitFor(() => expect(titlesIn("merged")).toContain("Customer task"));
+    await waitFor(() => expect(titlesUnder("Gemergt")).toContain("Customer task"));
     fireEvent.click(screen.getByRole("button", { name: UNMARK }));
-    expect(titlesIn("open")).toEqual(["Customer task", "Running task"]);
+    expect(titlesUnder("Ohne Status")).toEqual(["Customer task", "Running task"]);
     expect(document.querySelector(".detail-meta .badge.merged")).toBeNull();
     await waitFor(async () => expect(await ports.mergeMarks.all()).toEqual([]));
   });

@@ -4,7 +4,7 @@ import { formatDate, formatDeadline, isOverdue } from "../domain/dates";
 import { arrangeByOrder, moveKey } from "../domain/manual-order";
 import { isFullyMerged, mergeProgress } from "../domain/merge-progress";
 import { groupStacks, singlesBeforeStacks, type StackGroup } from "../domain/stacks";
-import type { WorkItem } from "../domain/work-item";
+import type { StatusColor, WorkItem } from "../domain/work-item";
 import { todoProgress, type Todo } from "../todos/todo-store";
 import { Icon } from "../ui/Icon";
 import { PullRequestCount } from "./PullRequestList";
@@ -26,10 +26,16 @@ interface WorkListProps {
 type Entry = StackGroup<WorkItem>;
 
 interface Section {
-  key: "all" | "open" | "merged";
+  key: string;
   title: string | null;
+  color: StatusColor | null;
+  merged: boolean;
   entries: Entry[];
 }
+
+const STATUS_ORDER = ["In Progress", "In Review", "Sprint Backlog", "Todo"];
+
+const NO_STATUS = "Ohne Status";
 
 interface DropTarget {
   key: string;
@@ -40,15 +46,38 @@ const entryKey = (entry: Entry) => entry.items[0].id;
 
 const keysOf = (section: Section) => section.entries.map(entryKey);
 
+function rankOf(status: string | null): number {
+  if (status === null) return STATUS_ORDER.length + 1;
+  const rank = STATUS_ORDER.indexOf(status);
+  return rank === -1 ? STATUS_ORDER.length : rank;
+}
+
+function statusSectionsOf(entries: Entry[]): Section[] {
+  const byStatus = new Map<string | null, Section>();
+  for (const entry of entries) {
+    const { status, statusColor } = entry.items[0];
+    const section = byStatus.get(status) ?? {
+      key: status === null ? "no-status" : `status:${status}`,
+      title: status ?? NO_STATUS,
+      color: status === null ? null : (statusColor ?? "GRAY"),
+      merged: false,
+      entries: [],
+    };
+    section.entries.push(entry);
+    byStatus.set(status, section);
+  }
+  return [...byStatus.entries()].sort(([a], [b]) => rankOf(a) - rankOf(b)).map(([, section]) => section);
+}
+
 function sectionsOf(items: WorkItem[], order: string[], mergeMarks: ReadonlySet<string>): Section[] {
   const entries = arrangeByOrder(singlesBeforeStacks(groupStacks(items)), entryKey, order);
+  if (!entries.some((entry) => entry.items[0].kind === "task")) {
+    return [{ key: "all", title: null, color: null, merged: false, entries }];
+  }
   const isMerged = (entry: Entry) => entry.items.every((item) => mergeMarks.has(item.id) || isFullyMerged(item));
-  if (!entries.some(isMerged)) return [{ key: "all", title: null, entries }];
-  const sections: Section[] = [
-    { key: "open", title: "In Arbeit", entries: entries.filter((entry) => !isMerged(entry)) },
-    { key: "merged", title: "Gemergt", entries: entries.filter(isMerged) },
-  ];
-  return sections.filter((section) => section.entries.length);
+  const merged = entries.filter(isMerged);
+  const sections = statusSectionsOf(entries.filter((entry) => !isMerged(entry)));
+  return merged.length ? [...sections, { key: "merged", title: "Gemergt", color: null, merged: true, entries: merged }] : sections;
 }
 
 function entryLabel(entry: Entry): string {
@@ -140,7 +169,6 @@ function WorkRow({ item, step, selected, todos, today, marked, onSelect }: WorkR
         <span class="meta">
           {item.deadline && <DeadlineLabel deadline={item.deadline} today={today} />}
           {item.closedAt && <span class="badge">geschlossen {formatDate(item.closedAt)}</span>}
-          <StatusLabel item={item} />
           <MergeLabel item={item} marked={marked} />
           <PullRequestCount item={item} />
           <TodoProgress todos={todos} />
@@ -151,16 +179,11 @@ function WorkRow({ item, step, selected, todos, today, marked, onSelect }: WorkR
 }
 
 function SectionHeader({ section, folded, onToggle }: { section: Section; folded: boolean; onToggle: () => void }) {
-  const content = (
-    <>
+  return (
+    <button type="button" class="work-section-header" aria-expanded={!folded} onClick={onToggle}>
+      {section.color && <span class={`status-dot status-${section.color.toLowerCase()}`} />}
       <span class="work-section-title">{section.title}</span>
       <span class="count">{section.entries.length}</span>
-    </>
-  );
-  if (section.key !== "merged") return <div class="work-section-header">{content}</div>;
-  return (
-    <button type="button" class="work-section-header foldable" aria-expanded={!folded} onClick={onToggle}>
-      {content}
       <span class="work-section-rule" />
       <Icon name="chevron" small />
     </button>
@@ -220,11 +243,17 @@ function WorkEntry({ entry, dragging, drop, onDragStart, onDragOver, onDrop, onD
 
 export function WorkList(props: WorkListProps) {
   const { items, emptyText, selectedId, todosByItem, today, onSelect, order, onReorder, onResetOrder, mergeMarks } = props;
-  const [mergedFolded, setMergedFolded] = useState(false);
+  const [foldedSections, setFoldedSections] = useState<ReadonlySet<string>>(new Set());
   const [dragged, setDragged] = useState<{ key: string; section: Section["key"] } | null>(null);
   const [dropTarget, setDropTarget] = useState<DropTarget | null>(null);
 
   if (!items.length) return <p class="empty">{emptyText}</p>;
+
+  const toggleFold = (key: string) => {
+    const next = new Set(foldedSections);
+    if (!next.delete(key)) next.add(key);
+    setFoldedSections(next);
+  };
 
   const sections = sectionsOf(items, order, mergeMarks);
   const reorder = (section: Section, moving: string, target: string, after: boolean) => {
@@ -293,11 +322,11 @@ export function WorkList(props: WorkListProps) {
   return (
     <div class="work-list">
       {sections.map((section) => {
-        const folded = section.key === "merged" && mergedFolded;
+        const folded = foldedSections.has(section.key);
         return (
-          <section key={section.key} class={`work-section ${section.key}`}>
+          <section key={section.key} class={section.merged ? "work-section merged" : "work-section"}>
             {section.title && (
-              <SectionHeader section={section} folded={folded} onToggle={() => setMergedFolded(!mergedFolded)} />
+              <SectionHeader section={section} folded={folded} onToggle={() => toggleFold(section.key)} />
             )}
             {!folded && <ul class="work-group">{section.entries.map((entry) => entryFor(section, entry))}</ul>}
           </section>
