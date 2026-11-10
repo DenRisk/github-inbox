@@ -97,11 +97,6 @@ export function App({ ports }: { ports: PopupPorts }) {
     setOrderByList({ ...orderByList, [tab]: keys });
     void ports.order.save(tab, keys);
   };
-  const resetOrder = () => {
-    const { [tab]: _forgotten, ...rest } = orderByList;
-    setOrderByList(rest);
-    void ports.order.reset(tab);
-  };
   const markMerged = (itemId: string, marked: boolean) => {
     const next = new Set(mergeMarks);
     if (marked) next.add(itemId);
@@ -179,7 +174,6 @@ export function App({ ports }: { ports: PopupPorts }) {
             onSelect={select}
             order={orderByList[tab] ?? []}
             onReorder={reorder}
-            onResetOrder={resetOrder}
             mergeMarks={mergeMarks}
           />
         </nav>

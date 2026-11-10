@@ -371,22 +371,6 @@ ul {
   color: var(--ink-subtle);
 }
 
-.reset-order {
-  align-self: center;
-  padding: var(--space-1) var(--space-2);
-  border: 0;
-  background: none;
-  color: var(--ink-subtle);
-  font-size: 13px;
-  text-decoration: underline;
-  text-underline-offset: 3px;
-  cursor: pointer;
-}
-
-.reset-order:hover {
-  color: var(--ink);
-}
-
 .work-row {
   display: flex;
   align-items: flex-start;

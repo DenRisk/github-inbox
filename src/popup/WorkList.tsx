@@ -19,7 +19,6 @@ interface WorkListProps {
   onSelect: (id: string) => void;
   order: string[];
   onReorder: (keys: string[]) => void;
-  onResetOrder: () => void;
   mergeMarks: ReadonlySet<string>;
 }
 
@@ -243,7 +242,7 @@ function WorkEntry({ entry, dragging, drop, onDragStart, onDragOver, onDrop, onD
 }
 
 export function WorkList(props: WorkListProps) {
-  const { items, emptyText, selectedId, todosByItem, today, onSelect, order, onReorder, onResetOrder, mergeMarks } = props;
+  const { items, emptyText, selectedId, todosByItem, today, onSelect, order, onReorder, mergeMarks } = props;
   const [foldedSections, setFoldedSections] = useState<ReadonlySet<string>>(new Set());
   const [dragged, setDragged] = useState<{ key: string; section: Section["key"] } | null>(null);
   const [dropTarget, setDropTarget] = useState<DropTarget | null>(null);
@@ -333,11 +332,6 @@ export function WorkList(props: WorkListProps) {
           </section>
         );
       })}
-      {order.length > 0 && (
-        <button type="button" class="reset-order" onClick={onResetOrder}>
-          Reihenfolge zurücksetzen
-        </button>
-      )}
     </div>
   );
 }

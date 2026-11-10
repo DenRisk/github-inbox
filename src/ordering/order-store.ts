@@ -14,9 +14,4 @@ export class OrderStore {
   async save(list: string, keys: string[]): Promise<void> {
     await this.store.set(ORDER_KEY, { ...(await this.all()), [list]: keys });
   }
-
-  async reset(list: string): Promise<void> {
-    const { [list]: _forgotten, ...rest } = await this.all();
-    await this.store.set(ORDER_KEY, rest);
-  }
 }

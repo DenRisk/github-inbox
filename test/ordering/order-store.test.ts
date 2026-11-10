@@ -12,12 +12,4 @@ describe("OrderStore", () => {
     await orders.save("reviews", ["x"]);
     expect(await orders.all()).toEqual({ tasks: ["b", "a"], reviews: ["x"] });
   });
-
-  it("forgets the order of one list on reset", async () => {
-    const orders = new OrderStore(createMemoryStore());
-    await orders.save("tasks", ["b", "a"]);
-    await orders.save("reviews", ["x"]);
-    await orders.reset("tasks");
-    expect(await orders.all()).toEqual({ reviews: ["x"] });
-  });
 });

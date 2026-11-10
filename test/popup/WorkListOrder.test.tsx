@@ -134,14 +134,10 @@ describe("WorkList order", () => {
     await waitFor(() => expect(shownTitles()).toEqual(["Second review", "Third review", "First review"]));
   });
 
-  it("goes back to the automatic order on reset", async () => {
+  it("offers no way to throw an arranged order away", async () => {
     const { ports } = fakePorts(snapshot);
     render(<App ports={ports} />);
-    expect(screen.queryByRole("button", { name: "Reihenfolge zurücksetzen" })).toBeNull();
     fireEvent.keyDown(await screen.findByRole("button", { name: "First review verschieben" }), { key: "ArrowDown" });
-    fireEvent.click(screen.getByRole("button", { name: "Reihenfolge zurücksetzen" }));
-    expect(shownTitles()).toEqual(["First review", "Second review", "Third review"]);
-    await waitFor(async () => expect(await ports.order.all()).toEqual({}));
-    expect(screen.queryByRole("button", { name: "Reihenfolge zurücksetzen" })).toBeNull();
+    expect(screen.queryByRole("button", { name: /zurücksetzen/ })).toBeNull();
   });
 });
