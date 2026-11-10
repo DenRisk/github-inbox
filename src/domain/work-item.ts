@@ -22,6 +22,19 @@ export interface LinkedPullRequest {
   review: ReviewState | null;
 }
 
+export interface IssueRef {
+  id: string;
+  title: string;
+  url: string;
+  number: number;
+  repository: string;
+}
+
+export interface SubIssueSummary {
+  total: number;
+  completed: number;
+}
+
 export interface WorkItem {
   id: string;
   kind: WorkItemKind;
@@ -37,4 +50,6 @@ export interface WorkItem {
   deadline: string | null;
   pullRequests: LinkedPullRequest[];
   branches: Branches | null;
+  parent?: IssueRef | null;
+  subIssues?: SubIssueSummary | null;
 }

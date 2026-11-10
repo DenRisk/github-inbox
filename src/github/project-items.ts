@@ -1,4 +1,4 @@
-import type { WorkItem, WorkItemKind } from "../domain/work-item";
+import type { IssueRef, SubIssueSummary, WorkItem, WorkItemKind } from "../domain/work-item";
 import { STATUS_FIELD, statusColorOf, type StatusValue } from "./board-status";
 import { GithubError, postGraphql, type GithubAccess, type GraphqlError } from "./graphql-client";
 import {
@@ -19,7 +19,12 @@ query ProjectItems($org: String!, $number: Int!, $query: String!, $after: String
           deadline: fieldValueByName(name: "Deadline-EOBD") { ... on ProjectV2ItemFieldDateValue { date } }
           content {
             __typename
-            ... on Issue { id title body url createdAt number repository { name } ${LINKED_PULL_REQUESTS_FIELDS} }
+            ... on Issue {
+              id title body url createdAt number repository { name }
+              parent { id title url number repository { name } }
+              subIssuesSummary { total completed }
+              ${LINKED_PULL_REQUESTS_FIELDS}
+            }
             ... on PullRequest { id title body url createdAt number repository { name } }
           }
         }
@@ -38,6 +43,8 @@ interface ItemContent extends LinkedPullRequestsNode {
   createdAt: string;
   number: number;
   repository: { name: string };
+  parent?: (Omit<IssueRef, "repository"> & { repository: { name: string } }) | null;
+  subIssuesSummary?: SubIssueSummary | null;
 }
 
 interface ItemNode {
@@ -64,6 +71,14 @@ function hasIssueOrPullRequest(node: ItemNode): node is ItemNode & { content: It
   return node.content?.__typename === "Issue" || node.content?.__typename === "PullRequest";
 }
 
+function toIssueRef(parent: ItemContent["parent"]): IssueRef | null {
+  return parent ? { ...parent, repository: parent.repository.name } : null;
+}
+
+function toSubIssues(summary: ItemContent["subIssuesSummary"]): SubIssueSummary | null {
+  return summary?.total ? { total: summary.total, completed: summary.completed } : null;
+}
+
 function toWorkItem(node: ItemNode & { content: ItemContent }, kind: WorkItemKind): WorkItem {
   const { content } = node;
   return {
@@ -81,6 +96,8 @@ function toWorkItem(node: ItemNode & { content: ItemContent }, kind: WorkItemKin
     deadline: node.deadline?.date ?? null,
     pullRequests: toLinkedPullRequests(content),
     branches: null,
+    parent: toIssueRef(content.parent),
+    subIssues: toSubIssues(content.subIssuesSummary),
   };
 }
 

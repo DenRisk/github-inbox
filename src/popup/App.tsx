@@ -175,6 +175,7 @@ export function App({ ports }: { ports: PopupPorts }) {
             order={orderByList[tab] ?? []}
             onReorder={reorder}
             mergeMarks={mergeMarks}
+            onOpen={ports.openUrl}
           />
         </nav>
         <main class="detail-column">

@@ -67,8 +67,27 @@ describe("fetchProjectItems", () => {
         deadline: "2026-10-24",
         pullRequests: [],
         branches: null,
+        parent: null,
+        subIssues: null,
       },
     ]);
+  });
+
+  it("links a sub-issue to its epic and counts the sub-issues of an epic", async () => {
+    const parent = { id: "I_9", title: "Sample epic", url: "https://github.com/acme/sample-repo/issues/9", number: 9, repository: { name: "sample-repo" } };
+    const content = { ...issueContent, parent, subIssuesSummary: { total: 4, completed: 1 } };
+    const fetchFn = fakeFetch(page([{ status: null, deadline: null, content }]));
+    const [mapped] = await fetchProjectItems({ ...params, fetchFn });
+    expect(mapped.parent).toEqual({ ...parent, repository: "sample-repo" });
+    expect(mapped.subIssues).toEqual({ total: 4, completed: 1 });
+    expect(requestBody(fetchFn).query).toContain("subIssuesSummary");
+  });
+
+  it("treats an issue without sub-issues as no epic", async () => {
+    const content = { ...issueContent, parent: null, subIssuesSummary: { total: 0, completed: 0 } };
+    const fetchFn = fakeFetch(page([{ status: null, deadline: null, content }]));
+    const [mapped] = await fetchProjectItems({ ...params, fetchFn });
+    expect(mapped.subIssues).toBeNull();
   });
 
   it("lists the pull requests that mention an issue", async () => {
