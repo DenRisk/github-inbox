@@ -1,3 +1,5 @@
+import type { IssueType } from "./issue-type";
+
 export type WorkItemKind = "review" | "task" | "closed";
 
 export type StatusColor = "GRAY" | "BLUE" | "GREEN" | "YELLOW" | "ORANGE" | "RED" | "PINK" | "PURPLE";
@@ -52,4 +54,5 @@ export interface WorkItem {
   branches: Branches | null;
   parent?: IssueRef | null;
   subIssues?: SubIssueSummary | null;
+  type?: IssueType | null;
 }

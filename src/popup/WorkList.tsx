@@ -160,6 +160,11 @@ export function StatusLabel({ item }: { item: WorkItem }) {
   return <span class={`badge status status-${color}`}>{item.status}</span>;
 }
 
+export function TypeLabel({ item }: { item: WorkItem }) {
+  if (!item.type) return null;
+  return <span class={`badge type status-${item.type.color.toLowerCase()}`}>{item.type.name}</span>;
+}
+
 export function MergeLabel({ item, marked }: { item: WorkItem; marked: boolean }) {
   if (item.kind !== "task") return null;
   const progress = mergeProgress(item.pullRequests);
@@ -223,6 +228,7 @@ function WorkRow({ item, step, selected, todos, today, marked, onSelect }: WorkR
           {item.repository} #{item.number}
         </span>
         <span class="meta">
+          <TypeLabel item={item} />
           {item.deadline && <DeadlineLabel deadline={item.deadline} today={today} />}
           {item.closedAt && <span class="badge">geschlossen {formatDate(item.closedAt)}</span>}
           <StatusLabel item={item} />

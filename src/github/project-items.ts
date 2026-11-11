@@ -1,5 +1,6 @@
 import type { IssueRef, SubIssueSummary, WorkItem, WorkItemKind } from "../domain/work-item";
 import { STATUS_FIELD, statusColorOf, type StatusValue } from "./board-status";
+import { ISSUE_TYPE_FIELDS, toIssueType, type IssueTypeNode } from "./issue-type";
 import { GithubError, postGraphql, type GithubAccess, type GraphqlError } from "./graphql-client";
 import {
   LINKED_PULL_REQUEST_FRAGMENT,
@@ -22,7 +23,7 @@ query ProjectItems($org: String!, $number: Int!, $query: String!, $after: String
             ... on Issue {
               id title body url createdAt number repository { name }
               parent { id title url number repository { name } }
-              subIssuesSummary { total completed }
+              ${ISSUE_TYPE_FIELDS}
               ${LINKED_PULL_REQUESTS_FIELDS}
             }
             ... on PullRequest { id title body url createdAt number repository { name } }
@@ -34,7 +35,7 @@ query ProjectItems($org: String!, $number: Int!, $query: String!, $after: String
 }
 ${LINKED_PULL_REQUEST_FRAGMENT}`;
 
-interface ItemContent extends LinkedPullRequestsNode {
+interface ItemContent extends LinkedPullRequestsNode, IssueTypeNode {
   __typename: string;
   id: string;
   title: string;
@@ -44,7 +45,6 @@ interface ItemContent extends LinkedPullRequestsNode {
   number: number;
   repository: { name: string };
   parent?: (Omit<IssueRef, "repository"> & { repository: { name: string } }) | null;
-  subIssuesSummary?: SubIssueSummary | null;
 }
 
 interface ItemNode {
@@ -98,6 +98,7 @@ function toWorkItem(node: ItemNode & { content: ItemContent }, kind: WorkItemKin
     branches: null,
     parent: toIssueRef(content.parent),
     subIssues: toSubIssues(content.subIssuesSummary),
+    type: content.__typename === "Issue" ? toIssueType(content) : null,
   };
 }
 

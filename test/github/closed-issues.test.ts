@@ -52,8 +52,20 @@ describe("fetchClosedIssues", () => {
         deadline: null,
         pullRequests: [],
         branches: null,
+        type: null,
       },
     ]);
+  });
+
+  it("derives the issue type from what GitHub declares or the title names", async () => {
+    const declared = { ...issue, issueType: { name: "Feature", color: "BLUE" } };
+    const prefixed = { ...issue, id: "I_2", title: "[Bug]: Sample issue" };
+    const fetchFn = fakeFetch(page([declared, prefixed]));
+    const [feature, bug] = await fetchClosedIssues({ ...params, fetchFn });
+    expect(feature.type).toEqual({ name: "Feature", color: "BLUE" });
+    expect(bug.type).toEqual({ name: "Bug", color: "RED" });
+    expect(bug.title).toBe("[Bug]: Sample issue");
+    expect(requestBody(fetchFn).query).toContain("issueType");
   });
 
   it("lists the pull requests that close an issue", async () => {

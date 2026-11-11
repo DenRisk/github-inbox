@@ -5,7 +5,7 @@ import type { TodoStore } from "../todos/todo-store";
 import { Icon } from "../ui/Icon";
 import { PullRequestList } from "./PullRequestList";
 import { TodoList } from "./TodoList";
-import { DeadlineLabel, KindTile, MergeLabel, StatusLabel } from "./WorkList";
+import { DeadlineLabel, KindTile, MergeLabel, StatusLabel, TypeLabel } from "./WorkList";
 
 interface WorkDetailProps {
   item: WorkItem;
@@ -30,6 +30,7 @@ export function WorkDetail({ item, today, todos, onTodosChange, onOpen, markedMe
             {item.closedAt && ` · geschlossen ${formatDate(item.closedAt)}`}
           </span>
           <p class="meta detail-meta">
+            <TypeLabel item={item} />
             {item.deadline && <DeadlineLabel deadline={item.deadline} today={today} />}
             <StatusLabel item={item} />
             <MergeLabel item={item} marked={markedMerged} />

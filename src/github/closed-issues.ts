@@ -1,4 +1,5 @@
 import type { WorkItem } from "../domain/work-item";
+import { ISSUE_TYPE_FIELDS, toIssueType, type IssueTypeNode } from "./issue-type";
 import { postGraphql, type GithubAccess, type GraphqlError } from "./graphql-client";
 import {
   LINKED_PULL_REQUEST_FRAGMENT,
@@ -13,13 +14,13 @@ query ClosedIssues($search: String!, $after: String) {
     pageInfo { hasNextPage endCursor }
     nodes {
       __typename
-      ... on Issue { id title body url createdAt closedAt number repository { name } ${LINKED_PULL_REQUESTS_FIELDS} }
+      ... on Issue { id title body url createdAt closedAt number repository { name } ${ISSUE_TYPE_FIELDS} ${LINKED_PULL_REQUESTS_FIELDS} }
     }
   }
 }
 ${LINKED_PULL_REQUEST_FRAGMENT}`;
 
-interface IssueNode extends LinkedPullRequestsNode {
+interface IssueNode extends LinkedPullRequestsNode, IssueTypeNode {
   __typename: "Issue";
   id: string;
   title: string;
@@ -63,6 +64,7 @@ function toClosedItem(issue: IssueNode): WorkItem {
     deadline: null,
     pullRequests: toLinkedPullRequests(issue),
     branches: null,
+    type: toIssueType(issue),
   };
 }
 

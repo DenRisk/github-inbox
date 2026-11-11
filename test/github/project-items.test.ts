@@ -69,6 +69,7 @@ describe("fetchProjectItems", () => {
         branches: null,
         parent: null,
         subIssues: null,
+        type: null,
       },
     ]);
   });
@@ -80,7 +81,15 @@ describe("fetchProjectItems", () => {
     const [mapped] = await fetchProjectItems({ ...params, fetchFn });
     expect(mapped.parent).toEqual({ ...parent, repository: "sample-repo" });
     expect(mapped.subIssues).toEqual({ total: 4, completed: 1 });
+    expect(mapped.type).toEqual({ name: "Epic", color: "PURPLE" });
     expect(requestBody(fetchFn).query).toContain("subIssuesSummary");
+  });
+
+  it("takes the label when nothing else names the type", async () => {
+    const content = { ...issueContent, labels: { nodes: [{ name: "bug" }] } };
+    const fetchFn = fakeFetch(page([{ status: null, deadline: null, content }]));
+    const [mapped] = await fetchProjectItems({ ...params, fetchFn });
+    expect(mapped.type).toEqual({ name: "Bug", color: "RED" });
   });
 
   it("treats an issue without sub-issues as no epic", async () => {
