@@ -1,5 +1,6 @@
 import { useCallback, useEffect, useRef, useState } from "preact/hooks";
 import { formatRelative } from "../domain/dates";
+import type { NoteReference } from "../notes/note-text";
 import type { OrderByList } from "../ordering/order-store";
 import { DEFAULT_SETTINGS, type QuickLinks as Links } from "../settings/settings";
 import type { Snapshot } from "../sync/snapshot";
@@ -7,6 +8,7 @@ import type { Todo } from "../todos/todo-store";
 import { Icon } from "../ui/Icon";
 import { ThemeToggle } from "../ui/ThemeToggle";
 import type { PopupPorts } from "./ports";
+import { NotesPanel } from "./NotesPanel";
 import { QuickLinks } from "./QuickLinks";
 import { WorkDetail } from "./WorkDetail";
 import { WorkList } from "./WorkList";
@@ -52,6 +54,8 @@ export function App({ ports }: { ports: PopupPorts }) {
   const [links, setLinks] = useState<Links>(DEFAULT_SETTINGS.links);
   const [orderByList, setOrderByList] = useState<OrderByList>({});
   const [mergeMarks, setMergeMarks] = useState<ReadonlySet<string>>(new Set());
+  const [notesOpen, setNotesOpen] = useState(false);
+  const [noteCount, setNoteCount] = useState(0);
 
   const reloadTodos = useCallback(() => {
     ports.todos.all().then(setTodosByItem);
@@ -83,6 +87,7 @@ export function App({ ports }: { ports: PopupPorts }) {
     ports.loadLinks().then(setLinks);
     ports.order.all().then(setOrderByList);
     ports.mergeMarks.all().then((marks) => setMergeMarks(new Set(marks)));
+    ports.notes.all().then((notes) => setNoteCount(notes.length));
     return unsubscribe;
   }, [ports, requestRefresh, reloadTodos]);
 
@@ -92,7 +97,22 @@ export function App({ ports }: { ports: PopupPorts }) {
   const items = snapshot[tab];
   const selectedId = selectedByTab[tab];
   const selected = items.find((item) => item.id === selectedId) ?? null;
-  const select = (id: string) => setSelectedByTab({ ...selectedByTab, [tab]: id });
+  const select = (id: string) => {
+    setSelectedByTab({ ...selectedByTab, [tab]: id });
+    setNotesOpen(false);
+  };
+  const openReference = (reference: NoteReference) => {
+    const isReferenced = (item: { id: string; url: string }) => item.id === reference.itemId || item.url === reference.url;
+    for (const list of ["tasks", "closed"] as const) {
+      const found = snapshot[list].find(isReferenced);
+      if (!found) continue;
+      setTab(list);
+      setSelectedByTab({ ...selectedByTab, [list]: found.id });
+      setNotesOpen(false);
+      return;
+    }
+    ports.openUrl(reference.url);
+  };
   const reorder = (keys: string[]) => {
     setOrderByList({ ...orderByList, [tab]: keys });
     void ports.order.save(tab, keys);
@@ -119,6 +139,17 @@ export function App({ ports }: { ports: PopupPorts }) {
         </div>
         <span class="header-actions">
           <ThemeToggle />
+          <button
+            type="button"
+            class={notesOpen ? "icon-button notes-toggle active" : "icon-button notes-toggle"}
+            aria-label="Notizen"
+            title="Notizen"
+            aria-pressed={notesOpen}
+            onClick={() => setNotesOpen(!notesOpen)}
+          >
+            <Icon name="notes" />
+            {noteCount > 0 && <span class="count">{noteCount}</span>}
+          </button>
           <button
             type="button"
             class={refreshing ? "icon-button refresh spinning" : "icon-button refresh"}
@@ -179,7 +210,14 @@ export function App({ ports }: { ports: PopupPorts }) {
           />
         </nav>
         <main class="detail-column">
-          {selected ? (
+          {notesOpen ? (
+            <NotesPanel
+              notes={ports.notes}
+              items={[...snapshot.tasks, ...snapshot.closed]}
+              onOpenReference={openReference}
+              onCountChange={setNoteCount}
+            />
+          ) : selected ? (
             <WorkDetail
               key={selected.id}
               item={selected}

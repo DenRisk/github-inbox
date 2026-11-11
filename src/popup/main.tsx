@@ -1,5 +1,6 @@
 import { render } from "preact";
 import { MergeMarkStore } from "../marks/merge-mark-store";
+import { NoteStore } from "../notes/note-store";
 import { OrderStore } from "../ordering/order-store";
 import { loadSettings } from "../settings/settings";
 import { createChromeStore } from "../storage/key-value-store";
@@ -27,6 +28,7 @@ const chromePorts: PopupPorts = {
   todos: new TodoStore(store),
   order: new OrderStore(store),
   mergeMarks: new MergeMarkStore(store),
+  notes: new NoteStore(store),
   openOptions: () => void chrome.runtime.openOptionsPage(),
   openUrl: (url) => void chrome.tabs.create({ url }),
   now: () => new Date(),
