@@ -464,49 +464,57 @@ ul {
   font-weight: 600;
 }
 
-.badge.status-gray {
+.badge.status-gray,
+.tile.status-gray {
   border-color: var(--status-gray-bg);
   background: var(--status-gray-bg);
   color: var(--status-gray);
 }
 
-.badge.status-blue {
+.badge.status-blue,
+.tile.status-blue {
   border-color: var(--status-blue-bg);
   background: var(--status-blue-bg);
   color: var(--status-blue);
 }
 
-.badge.status-green {
+.badge.status-green,
+.tile.status-green {
   border-color: var(--status-green-bg);
   background: var(--status-green-bg);
   color: var(--status-green);
 }
 
-.badge.status-yellow {
+.badge.status-yellow,
+.tile.status-yellow {
   border-color: var(--status-yellow-bg);
   background: var(--status-yellow-bg);
   color: var(--status-yellow);
 }
 
-.badge.status-orange {
+.badge.status-orange,
+.tile.status-orange {
   border-color: var(--status-orange-bg);
   background: var(--status-orange-bg);
   color: var(--status-orange);
 }
 
-.badge.status-red {
+.badge.status-red,
+.tile.status-red {
   border-color: var(--status-red-bg);
   background: var(--status-red-bg);
   color: var(--status-red);
 }
 
-.badge.status-pink {
+.badge.status-pink,
+.tile.status-pink {
   border-color: var(--status-pink-bg);
   background: var(--status-pink-bg);
   color: var(--status-pink);
 }
 
-.badge.status-purple {
+.badge.status-purple,
+.tile.status-purple {
   border-color: var(--status-purple-bg);
   background: var(--status-purple-bg);
   color: var(--status-purple);

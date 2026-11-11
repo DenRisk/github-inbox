@@ -5,8 +5,9 @@ import { arrangeByOrder, moveKey } from "../domain/manual-order";
 import { isFullyMerged, mergeProgress } from "../domain/merge-progress";
 import { groupStacks, singlesBeforeStacks, type StackGroup } from "../domain/stacks";
 import type { IssueRef, StatusColor, WorkItem } from "../domain/work-item";
+import type { IssueType } from "../domain/issue-type";
 import { todoProgress, type Todo } from "../todos/todo-store";
-import { Icon } from "../ui/Icon";
+import { Icon, type IconName } from "../ui/Icon";
 import { PullRequestCount } from "./PullRequestList";
 import { StackHeader } from "./StackHeader";
 
@@ -137,7 +138,27 @@ function isLowerHalf(event: DragEvent): boolean {
   return event.clientY > box.top + box.height / 2;
 }
 
+const TYPE_ICONS: Record<string, IconName> = {
+  bug: "bug",
+  feature: "sparkles",
+  refactoring: "wrench",
+  epic: "stack",
+};
+
+function typeIconOf(type: IssueType): IconName {
+  return TYPE_ICONS[type.name.toLowerCase()] ?? "tag";
+}
+
+function TypeTile({ type }: { type: IssueType }) {
+  return (
+    <span class={`tile type status-${type.color.toLowerCase()}`} role="img" aria-label={type.name} title={type.name}>
+      <Icon name={typeIconOf(type)} />
+    </span>
+  );
+}
+
 export function KindTile({ item }: { item: WorkItem }) {
+  if (item.type) return <TypeTile type={item.type} />;
   return (
     <span class={`tile ${item.kind}`}>
       <Icon name={item.kind} />
@@ -228,7 +249,6 @@ function WorkRow({ item, step, selected, todos, today, marked, onSelect }: WorkR
           {item.repository} #{item.number}
         </span>
         <span class="meta">
-          <TypeLabel item={item} />
           {item.deadline && <DeadlineLabel deadline={item.deadline} today={today} />}
           {item.closedAt && <span class="badge">geschlossen {formatDate(item.closedAt)}</span>}
           <StatusLabel item={item} />
